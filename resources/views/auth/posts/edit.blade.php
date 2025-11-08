@@ -1,6 +1,6 @@
 @extends('layouts.auth')
 
-@section('title', 'Crear Noticia')
+@section('title', 'Editar Noticia')
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('assets/website/plugins/summernote/summernote.min.css') }}">
@@ -56,7 +56,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('posts.index') }}">Noticias</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Crear Noticia</li>
+                    <li class="breadcrumb-item active" aria-current="page">Editar Noticia</li>
                 </ol>
             </nav>
         </div>
@@ -65,9 +65,9 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="header-subsection">
-                            <h4 class="card-title">Crear Noticia</h4>
+                            <h4 class="card-title">Editar Noticia</h4>
                             <div>
-                                <a href="{{ route('posts.index') }}" id="btn-back-to-list" type="submit" class="btn btn-sm btn-outline-secondary">← Volver a la lista</a>
+                                <a href="{{ route('posts.index') }}" id="btn-back-to-list" class="btn btn-sm btn-outline-secondary">← Volver a la lista</a>
                             </div>
                         </div>
 
@@ -81,73 +81,71 @@
                             </div>
                         @endif
 
-                        <form method="POST" action="{{ route('posts.store') }}" class="forms-sample" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('posts.update', $post->id) }}" class="forms-sample" enctype="multipart/form-data">
                             @csrf
+                            @method('PUT')
+
                             <div class="form-group">
                                 <label for="title">Titulo</label>
-                                <input type="text" name="title" class="form-control" id="title" placeholder="Titulo" value="{{ old('title') }}" required>
+                                <input type="text" name="title" class="form-control" id="title" placeholder="Titulo" value="{{ old('title', $post->title) }}" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="category">Categoria</label>
                                 <select class="form-control" id="category" name="category" required>
-                                    <option value="" disabled selected>Seleccione una categoria</option>
-                                    @if (count($categories) > 0)
-                                        @foreach ($categories as $category)
-                                            <option @selected(old('category') == $category->id) value="{{ $category->id }}">{{ $category->name }}</option>
-                                        @endforeach
-                                    @endif
+                                    <option value="" disabled>Seleccione una categoria</option>
+                                    @foreach ($categories as $category)
+                                        <option @selected(old('category', $post->category_id) == $category->id) value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
 
                             <div class="form-group">
                                 <label for="is_published">Publicar</label>
                                 <select class="form-control" id="is_published" name="is_published" required>
-                                    <option value="" disabled selected>Seleccione una opcion</option>
-                                    <option @selected(old('is_published') == 1) value="1">Si</option>
-                                    <option @selected(old('is_published') == 0) value="0">No</option>
+                                    <option value="" disabled>Seleccione una opcion</option>
+                                    <option @selected(old('is_published', $post->is_published) == 1) value="1">Si</option>
+                                    <option @selected(old('is_published', $post->is_published) == 0) value="0">No</option>
                                 </select>
                             </div>
 
                             <div class="form-group form-check">
                                 <input type="hidden" name="is_slider" value="0">
-                                <input type="checkbox" class="form-check-input" id="is_slider" name="is_slider" value="1" @checked(old('is_slider'))>
-                                <label class="form-check-label" for="is_slider">Mostrar en slider principal</label>
+                                <input type="checkbox" class="form-check-input" id="is_slider" name="is_slider" value="1" @checked(old('is_slider', $post->is_slider))>
+                                <label class="form-check-label" for="is_slider">Mostrar en Banner</label>
                             </div>
 
                             <div class="form-group form-check">
                                 <input type="hidden" name="is_news_slider" value="0">
-                                <input type="checkbox" class="form-check-input" id="is_news_slider" name="is_news_slider" value="1" @checked(old('is_news_slider'))>
-                                <label class="form-check-label" for="is_news_slider">Mostrar en "Noticias y Actividades para ti"</label>
+                                <input type="checkbox" class="form-check-input" id="is_news_slider" name="is_news_slider" value="1" @checked(old('is_news_slider', $post->is_news_slider))>
+                                <label class="form-check-label" for="is_news_slider">Mostrar slider home</label>
                             </div>
 
                             <div class="form-group" id="slider-file-group" style="display: none;">
-                                <label>Cargar Imagen para slider</label>
+                                <label>Cargar Imagen Principal (dejar vacío para no cambiar)</label>
                                 <div class="input-group col-xs-12">
-                                    <input type="file" name="slider_file" id="slider_file" class="form-control file-upload-info" placeholder="Cargar Imagen para slider" accept="image/*">
+                                    <input type="file" name="slider_file" id="slider_file" class="form-control file-upload-info" placeholder="Cargar Imagen principal" accept="image/*">
                                 </div>
-                                <input type="hidden" name="slider_position_x" id="slider_position_x" value="{{ old('slider_position_x', 50) }}">
-                                <input type="hidden" name="slider_position_y" id="slider_position_y" value="{{ old('slider_position_y', 50) }}">
+                                <input type="hidden" name="slider_position_x" id="slider_position_x" value="{{ old('slider_position_x', $post->slider_position_x ?? 50) }}">
+                                <input type="hidden" name="slider_position_y" id="slider_position_y" value="{{ old('slider_position_y', $post->slider_position_y ?? 50) }}">
                                 <div class="slider-preview-wrapper" id="slider_preview_wrapper">
-                                    <div class="slider-preview" id="slider_preview" data-initial-image="" data-initial-x="{{ old('slider_position_x', 50) }}" data-initial-y="{{ old('slider_position_y', 50) }}">
+                                    <div class="slider-preview" id="slider_preview" data-initial-image="{{ $post->sliderGallery ? asset($post->sliderGallery->image) : ($post->gallery ? asset($post->gallery->image) : '') }}" data-initial-x="{{ $post->slider_position_x ?? 50 }}" data-initial-y="{{ $post->slider_position_y ?? 50 }}">
                                         <div class="slider-preview-overlay">Arrastra para ajustar la posición</div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Cargar Imagen</label>
-                                <div class="input-group col-xs-12">
-                                    <input type="file" name="file" class="form-control file-upload-info" placeholder="Cargar Imagen" required>
-                                </div>
+                                @if($post->sliderGallery)
+                                    <div class="mt-2">
+                                        <img src="{{ asset($post->sliderGallery->image) }}" alt="slider" style="max-width:200px;">
+                                    </div>
+                                @endif
                             </div>
 
                             <div class="form-group">
                                 <label for="description">Descripcion</label>
-                                <textarea id="summernote" class="form-control" name="description" minlength="10" required>{{ old('description') }}</textarea>
+                                <textarea id="summernote" class="form-control" name="description" minlength="10" required>{{ old('description', $post->description) }}</textarea>
                             </div>
 
-                            <button type="submit" class="btn btn-gradient-primary me-2">Crear</button>
+                            <button type="submit" class="btn btn-gradient-primary me-2">Actualizar</button>
                         </form>
                     </div>
                 </div>
@@ -293,6 +291,13 @@
                 activePointerId = null;
                 $preview.removeClass('is-dragging').addClass('no-helper');
             });
+
+            var initialImage = $preview.data('initial-image');
+            if (initialImage) {
+                var initialX = clamp($preview.data('initial-x'));
+                var initialY = clamp($preview.data('initial-y'));
+                setPreview(initialImage, initialX, initialY);
+            }
 
             toggleSlider();
         });

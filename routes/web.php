@@ -18,4 +18,6 @@ Auth::routes();
 Route::prefix('auth')->middleware(['auth'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('auth.dashboard');
     Route::resource('posts', PostController::class);
+    // Preview a post as it would appear on the public site (AJAX modal in admin)
+    Route::get('posts/{post}/preview', [PostController::class, 'preview'])->name('posts.preview');
 });

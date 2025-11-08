@@ -4,7 +4,7 @@ namespace App\Http\Requests\Auth\Post;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateRequest extends FormRequest
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,8 @@ class CreateRequest extends FormRequest
             'title' => ['required', 'min:2', 'max:50', 'string'],
             'category' => ['required'],
             'is_published' => ['required'],
-            'file' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'dimensions:min_width=500, min_height=500'],
+            // file not required on update
+            'file' => ['sometimes', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'dimensions:min_width=500, min_height=500'],
             'is_slider' => ['nullable', 'boolean'],
             'is_news_slider' => ['nullable', 'boolean'],
             'slider_file' => ['sometimes', 'required_if:is_slider,1', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'dimensions:min_width=500, min_height=500'],

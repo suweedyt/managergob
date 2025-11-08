@@ -94,7 +94,6 @@
                             <div class="collapse" id="ui-basic">
                                 <ul class="nav flex-column sub-menu">
                                     <li class="nav-item"> <a class="nav-link" href="{{ route('posts.index') }}">Noticias</a></li>
-                                    <li class="nav-item"> <a class="nav-link" href="{{ route('posts.create') }}">Nueva Noticia</a></li>
                                 </ul>
                             </div>
                         </li>

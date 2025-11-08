@@ -14,20 +14,16 @@
         <meta name="author" content="Suweed">
         <!-- Favicon -->
         <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/website/images/favicon.png') }}" />
-
         <!-- bootstrap.min css -->
         <link rel="stylesheet" href="{{asset('assets/website/plugins/bootstrap/bootstrap.min.css')}}">
         <!-- Ionic Icon Css -->
         <link rel="stylesheet" href="{{asset('assets/website/plugins/Ionicons/css/ionicons.min.css')}}">
         <!-- animate.css -->
         <link rel="stylesheet" href="{{asset('assets/website/plugins/animate-css/animate.css')}}">
-
         <!-- Main Stylesheet -->
         <link rel="stylesheet" href="{{asset('assets/website/css/style.css')}}">
-
         <!-- Custom Stylesheet -->
         <link rel="stylesheet" href="{{asset('assets/website/css/custom-style-morena.css')}}">
-
         <!--styles componentes -->
         @stack('styles')
     </head>
@@ -57,9 +53,6 @@
                                     </li>
                                     <li class="nav-item @@news">
                                         <a class="nav-link" href="{{ route('news') }}">Noticias</a>
-                                    </li>
-                                    <li class="nav-item @@us">
-                                        <a class="nav-link" href="#">Nosotros</a>
                                     </li>
                                     <li class="nav-item @@contact">
                                         <a class="nav-link" href="#">Contacto</a>
@@ -100,7 +93,6 @@
         <script src="{{ asset('assets/website/plugins/jquery/jquery.min.js') }}"></script>
         <!-- Bootstrap 4.5 -->
         <script src="{{ asset('assets/website/plugins/bootstrap/bootstrap.min.js') }}"></script>
-
         <!-- scripts custom -->
         <script src="{{ asset('assets/website/js/script.js') }}"></script>
          <!-- scripts componentes -->

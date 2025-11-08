@@ -1,0 +1,12 @@
+.arrow-btn-nav {
+    background: transparent;
+    border: 0;
+}
+
+.arrow-btn-nav .icon-arrow-btn {
+    font-size: 25px;
+    color: #000;
+    border: #000 solid 1px;
+    border-radius: 50%;
+    width: 45px;
+}
