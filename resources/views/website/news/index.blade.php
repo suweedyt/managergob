@@ -3,18 +3,6 @@
 @section('title', 'Noticias y Actividades')
 
 @section ('content')
-    <section class="page-title news-backgroud">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="block">
-                        <h1>Noticias y Actividades</h1>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <div class="page-wrapper">
         <div class="container">
             <div class="row">
@@ -28,17 +16,18 @@
                                 <div class="post-meta">
                                     <ul>
                                         <li>
-                                            <i class="ion-calendar"></i> {{ date('d M Y', strtotime($post->created_at)); }}
+                                            <i class="ion-calendar"></i>
+                                            {{ $post->created_at->locale('es')->isoFormat('D [de] MMMM YYYY') }}
                                         </li>
                                     </ul>
                                 </div>
                                 <div class="post-media post-thumb">
-                                    <a href="blog-single.html">
+                                    <a href="{{ route('news.single', $post->id) }}">
                                         <img src="{{ $post->gallery->image }}" alt="">
                                     </a>
                                 </div>
                                 <div class="post-content">
-                                    <div> {!! limitHtml($post->description, 150, '...') !!} </div>
+                                    <div class="rich-content"> {!! limitHtml($post->description, 150, '...') !!} </div>
                                     <div><a href="{{ route('news.single', $post->id) }}" class="btn btn-main">Saber M&aacute;s</a></div>
                                 </div>
                             </div>
@@ -69,7 +58,7 @@
                                                 <h4 class="media-heading">
                                                     <a href="{{ route('news.single', $latestPost->id) }}">{{ $latestPost->title }}</a>
                                                 </h4>
-                                                <p>{!! limitHtml($post->description, 15, '...') !!}</p>
+                                                <div class="rich-content">{!! limitHtml($post->description, 15, '...') !!}</div>
                                             </div>
                                         </div>
                                     @endforeach

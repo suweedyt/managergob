@@ -77,17 +77,22 @@
     color: #3f0d21 !important;
 }
 
-/** Page News */
-.news-backgroud {
-    background: url(../images/gobiernoEdificio.jpg);
-    background-size: cover;
-    background-attachment: fixed;
-    background-position: bottom center;
-    background-repeat: no-repeat;
-}
+
+/**
+    pagina de noticias
+*/
 
 .page-wrapper .container .back-list-news a:hover {
     color: #611232;
+}
+
+.post .post-media.post-thumb a {
+    display: flex;
+    justify-content: center;
+}
+
+.post .post-media.post-thumb a img{
+    width: 80%;
 }
 
 /** Paginator */
@@ -110,4 +115,51 @@
 /* Footer */
 .footer {
     background-color: #611232;
+}
+
+/* Restore list styles inside editor-generated content */
+.rich-content ul,
+.rich-content ol {
+    margin: 0 0 1rem 0;
+    padding-left: 1.25rem;
+}
+.rich-content ul {
+    list-style-type: disc;
+}
+.rich-content ol {
+    list-style-type: decimal;
+}
+.rich-content ul ul {
+    list-style-type: circle;
+}
+.rich-content li {
+    margin-bottom: .45rem;
+}
+
+/* ensure images and tables inside rich content are responsive */
+.rich-content img {
+    max-width: 100%;
+    height: auto;
+}
+.rich-content table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.rich-content table th,
+.rich-content table td {
+    border: 1px solid #ddd;
+    padding: .5rem;
+}
+
+/* Ensure footer sticks to bottom when page content is short */
+body.site-flex {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.site-content {
+    flex: 1 0 auto; /* grow to push footer down */
+}
+.footer {
+    flex-shrink: 0;
 }

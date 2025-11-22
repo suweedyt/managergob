@@ -14,6 +14,8 @@
         <!-- inject:css -->
         <!-- endinject -->
         <!-- Layout styles -->
+    <!-- Font Awesome (admin) -->
+    <link rel="stylesheet" href="{{ asset('assets/website/plugins/font-awesome/css/all.min.css') }}">
         <link rel="stylesheet" href="{{asset('assets/auth/css/style.css')}}">
          <link rel="stylesheet" href="{{asset('assets/auth/css/custom-style-morena.css')}}">
         <!-- End layout styles -->
@@ -25,6 +27,7 @@
     </head>
     <body>
         <div class="container-scroller">
+            <!-- header admin -->
             <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
                 <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
                     <a class="navbar-brand brand-logo" href="{{ route('auth.dashboard') }}">
@@ -74,50 +77,100 @@
                 </div>
             </nav>
 
-            <!-- partial -->
+            <!-- container components body -->
             <div class="container-fluid page-body-wrapper">
-                <!-- partial:partials/_sidebar.html -->
+                <!-- menu lateral -->
                 <nav class="sidebar sidebar-offcanvas" id="sidebar">
                     <ul class="nav">
+                        @php $isDashboard = request()->routeIs('auth.dashboard'); @endphp
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('auth.dashboard') }}">
+                            <a class="nav-link {{ $isDashboard ? 'active' : '' }}" href="{{ route('auth.dashboard') }}">
                                 <span class="menu-title">Dashboard</span>
                                 <i class="mdi mdi-home menu-icon"></i>
                             </a>
                         </li>
+                        @php
+                            $isNoticias = request()->is('auth/posts*') || request()->is('auth/categories*') || request()->routeIs('posts.*') || request()->routeIs('categories.*');
+                        @endphp
                         <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                            <a class="nav-link {{ $isNoticias ? '' : 'collapsed' }}" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="{{ $isNoticias ? 'true' : 'false' }}" aria-controls="ui-basic">
                                 <span class="menu-title">Noticias</span>
                                 <i class="menu-arrow"></i>
                                 <i class="mdi mdi-crosshairs-gps menu-icon"></i>
                             </a>
-                            <div class="collapse" id="ui-basic">
+                            <div class="collapse {{ $isNoticias ? 'show' : '' }}" id="ui-basic">
                                 <ul class="nav flex-column sub-menu">
-                                    <li class="nav-item"> <a class="nav-link" href="{{ route('posts.index') }}">Noticias</a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('posts.*') ? 'active' : '' }}" href="{{ route('posts.index') }}">Noticias</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('categories.*') ? 'active' : '' }}" href="{{ route('categories.index') }}">Categorías</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        @php
+                            $isTramites = request()->routeIs('tramites.*') || request()->routeIs('tramitessettings.*');
+                        @endphp
+                        <li class="nav-item">
+                            <a class="nav-link {{ $isTramites ? '' : 'collapsed' }}" data-bs-toggle="collapse" href="#tramites-config" aria-expanded="{{ $isTramites ? 'true' : 'false' }}" aria-controls="tramites-config">
+                                <span class="menu-title">Trámites</span>
+                                <i class="menu-arrow"></i>
+                                <i class="mdi mdi-file-document-box menu-icon"></i>
+                            </a>
+                            <div class="collapse {{ $isTramites ? 'show' : '' }}" id="tramites-config">
+                                <ul class="nav flex-column sub-menu">
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('tramites.*') ? 'active' : '' }}" href="{{ route('tramites.index') }}">Trámites</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('tramitessettings.*') ? 'active' : '' }}" href="{{ route('tramitessettings.index') }}">Configuraciones</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        @php $isFeatureSection = request()->routeIs('featuresettings.*'); @endphp
+                        <li class="nav-item">
+                            <a class="nav-link {{ $isFeatureSection ? 'active' : '' }}" href="{{ route('featuresettings.index') }}">
+                                <span class="menu-title">Sección destacada</span>
+                                <i class="mdi mdi-star-circle menu-icon"></i>
+                            </a>
+                        </li>
+
+                        @php $isSiteConfig = request()->routeIs('site-settings.*'); @endphp
+                        <li class="nav-item">
+                            <a class="nav-link {{ $isSiteConfig ? '' : 'collapsed' }}" data-bs-toggle="collapse" href="#site-config" aria-expanded="{{ $isSiteConfig ? 'true' : 'false' }}" aria-controls="site-config">
+                                <span class="menu-title">Configuración del sitio</span>
+                                <i class="menu-arrow"></i>
+                                <i class="mdi mdi-tune menu-icon"></i>
+                            </a>
+                            <div class="collapse {{ $isSiteConfig ? 'show' : '' }}" id="site-config">
+                                <ul class="nav flex-column sub-menu">
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('site-settings.*') ? 'active' : '' }}" href="{{ route('site-settings.index') }}">Header &amp; Footer</a>
+                                    </li>
                                 </ul>
                             </div>
                         </li>
                     </ul>
                 </nav>
 
-                <!-- partial -->
+                <!-- content page -->
                 <div class="main-panel">
 
-                    @yield('section')
+                    @yield('section');
 
-                    <!-- partial:partials/_footer.html -->
+                    <!-- footer admin -->
                     <footer class="footer">
                         <div class="container-fluid d-flex justify-content-between">
                             <span class="text-muted d-block text-center text-sm-start d-sm-inline-block">Copyright © 2024</span>
                         </div>
                     </footer>
-                    <!-- partial -->
                 </div>
-                <!-- main-panel ends -->
             </div>
-            <!-- page-body-wrapper ends -->
         </div>
-        <!-- container-scroller -->
 
         <!-- plugins:js -->
         <script src="{{ asset('assets/auth/vendors/js/vendor.bundle.base.js') }}"></script>
@@ -134,6 +187,25 @@
         <script src="{{ asset('assets/auth/js/dashboard.js') }}"></script>
         <script src="{{ asset('assets/auth/js/todolist.js') }}"></script>
         <!-- End custom js for this page -->
+        <!-- DataTables idioma por defecto (español) -->
+        <script>
+            (function setDataTablesSpanish() {
+                var url = '{{ asset("assets/website/plugins/datatables/lang/es-ES.json") }}';
+
+                function applyDefaults() {
+                    if (window.jQuery && $.fn && $.fn.dataTable) {
+                        $.extend(true, $.fn.dataTable.defaults, {
+                            language: { url: url }
+                        });
+                    } else {
+                        // reintentar hasta que DataTables esté disponible
+                        setTimeout(applyDefaults, 60);
+                    }
+                }
+
+                applyDefaults();
+            })();
+        </script>
         <!-- Scripts by module -->
         @yield('scripts')
 

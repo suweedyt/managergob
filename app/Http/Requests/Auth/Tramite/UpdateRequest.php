@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Http\Requests\Auth\Tramite;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class UpdateRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'title_full' => ['required', 'string', 'max:255'],
+            'title_short' => ['required', 'string', 'max:100'],
+            'logo_class' => ['nullable', 'string', 'max:255'],
+            'logo_image' => ['sometimes', 'nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:4096'],
+            'description' => ['nullable', 'string'],
+            'content' => ['nullable', 'string'],
+            'is_published' => ['nullable', 'boolean'],
+        ];
+    }
+}

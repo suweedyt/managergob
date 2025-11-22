@@ -28,8 +28,9 @@ class UpdateRequest extends FormRequest
             // file not required on update
             'file' => ['sometimes', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'dimensions:min_width=500, min_height=500'],
             'is_slider' => ['nullable', 'boolean'],
+            'banner_use_different' => ['nullable', 'boolean'],
             'is_news_slider' => ['nullable', 'boolean'],
-            'slider_file' => ['sometimes', 'required_if:is_slider,1', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'dimensions:min_width=500, min_height=500'],
+            'slider_file' => ['sometimes', 'required_if:banner_use_different,1', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'dimensions:min_width=500, min_height=500'],
             'slider_position_x' => ['nullable', 'integer', 'min:0', 'max:100'],
             'slider_position_y' => ['nullable', 'integer', 'min:0', 'max:100'],
             'description' => ['required', 'min:10', 'max:5000000']

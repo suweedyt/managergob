@@ -100,32 +100,46 @@
                                 </select>
                             </div>
 
-                            <div class="form-group">
-                                <label for="is_published">Publicar</label>
-                                <select class="form-control" id="is_published" name="is_published" required>
-                                    <option value="" disabled>Seleccione una opcion</option>
-                                    <option @selected(old('is_published', $post->is_published) == 1) value="1">Si</option>
-                                    <option @selected(old('is_published', $post->is_published) == 0) value="0">No</option>
-                                </select>
+                            <div class="form-group form-check form-switch">
+                                <input type="hidden" name="is_published" value="0">
+                                <input class="form-check-input" type="checkbox" role="switch" id="is_published" name="is_published" value="1" @checked(old('is_published', $post->is_published) == 1)>
+                                <label class="form-check-label" for="is_published">Publicar</label>
                             </div>
 
-                            <div class="form-group form-check">
+                            <div class="form-group">
+                                <label for="file">Imagen Principal (dejar vacío para no cambiar)</label>
+                                <div class="input-group col-xs-12">
+                                    <input type="file" name="file" id="main_file" class="form-control file-upload-info" placeholder="Cargar Imagen Principal" accept="image/*">
+                                </div>
+                                @if($post->gallery)
+                                    <div class="mt-2">
+                                        <img src="{{ asset($post->gallery->image) }}" alt="principal" style="max-width:200px;">
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div class="form-group form-check form-switch">
                                 <input type="hidden" name="is_slider" value="0">
-                                <input type="checkbox" class="form-check-input" id="is_slider" name="is_slider" value="1" @checked(old('is_slider', $post->is_slider))>
+                                <input class="form-check-input" type="checkbox" role="switch" id="is_slider" name="is_slider" value="1" @checked(old('is_slider', $post->is_slider))>
                                 <label class="form-check-label" for="is_slider">Mostrar en Banner</label>
                             </div>
 
-                            <div class="form-group form-check">
-                                <input type="hidden" name="is_news_slider" value="0">
-                                <input type="checkbox" class="form-check-input" id="is_news_slider" name="is_news_slider" value="1" @checked(old('is_news_slider', $post->is_news_slider))>
-                                <label class="form-check-label" for="is_news_slider">Mostrar slider home</label>
-                            </div>
-
                             <div class="form-group" id="slider-file-group" style="display: none;">
-                                <label>Cargar Imagen Principal (dejar vacío para no cambiar)</label>
-                                <div class="input-group col-xs-12">
-                                    <input type="file" name="slider_file" id="slider_file" class="form-control file-upload-info" placeholder="Cargar Imagen principal" accept="image/*">
+                                <label>Opciones de Banner</label>
+
+                                <div class="form-group form-check">
+                                    <input type="hidden" name="banner_use_different" value="0">
+                                    <input type="checkbox" class="form-check-input" id="banner_use_different" name="banner_use_different" value="1" @checked(old('banner_use_different', isset($post->sliderGallery) && $post->sliderGallery && (($post->gallery->id ?? null) !== ($post->sliderGallery->id ?? null))))>
+                                    <label class="form-check-label" for="banner_use_different">Usar imagen distinta para el banner</label>
                                 </div>
+
+                                <div id="banner-file-input" style="display: none;">
+                                    <label>Cargar Imagen para banner (dejar vacío para no cambiar)</label>
+                                    <div class="input-group col-xs-12">
+                                        <input type="file" name="slider_file" id="slider_file" class="form-control file-upload-info" placeholder="Cargar Imagen para slider" accept="image/*">
+                                    </div>
+                                </div>
+
                                 <input type="hidden" name="slider_position_x" id="slider_position_x" value="{{ old('slider_position_x', $post->slider_position_x ?? 50) }}">
                                 <input type="hidden" name="slider_position_y" id="slider_position_y" value="{{ old('slider_position_y', $post->slider_position_y ?? 50) }}">
                                 <div class="slider-preview-wrapper" id="slider_preview_wrapper">
@@ -133,11 +147,12 @@
                                         <div class="slider-preview-overlay">Arrastra para ajustar la posición</div>
                                     </div>
                                 </div>
-                                @if($post->sliderGallery)
-                                    <div class="mt-2">
-                                        <img src="{{ asset($post->sliderGallery->image) }}" alt="slider" style="max-width:200px;">
-                                    </div>
-                                @endif
+                            </div>
+
+                            <div class="form-group form-check form-switch">
+                                <input type="hidden" name="is_news_slider" value="0">
+                                <input class="form-check-input" type="checkbox" role="switch" id="is_news_slider" name="is_news_slider" value="1" @checked(old('is_news_slider', $post->is_news_slider))>
+                                <label class="form-check-label" for="is_news_slider">Mostrar slider home</label>
                             </div>
 
                             <div class="form-group">
@@ -162,7 +177,10 @@
 
             var $sliderCheckbox = $('#is_slider');
             var $sliderGroup = $('#slider-file-group');
+            var $bannerDifferent = $('#banner_use_different');
+            var $bannerFileInputWrapper = $('#banner-file-input');
             var $sliderFile = $('#slider_file');
+            var $mainFile = $('#main_file');
             var $previewWrapper = $('#slider_preview_wrapper');
             var $preview = $('#slider_preview');
             var $posX = $('#slider_position_x');
@@ -190,7 +208,12 @@
             }
 
             function showPreview() {
-                if ($sliderCheckbox.is(':checked') && $preview.hasClass('has-image')) {
+                if (!$sliderCheckbox.is(':checked')) {
+                    $previewWrapper.hide();
+                    return;
+                }
+
+                if ($preview.hasClass('has-image')) {
                     $previewWrapper.stop(true, true).fadeIn(150);
                 } else {
                     $previewWrapper.hide();
@@ -234,6 +257,30 @@
 
             $sliderCheckbox.on('change', toggleSlider);
 
+            // bannerDifferent toggle
+            $bannerDifferent.on('change', function () {
+                if ($(this).is(':checked')) {
+                    $bannerFileInputWrapper.slideDown(120);
+                    if ($sliderFile[0] && $sliderFile[0].files && $sliderFile[0].files[0]) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) { setPreview(e.target.result, 50, 50); };
+                        reader.readAsDataURL($sliderFile[0].files[0]);
+                    }
+                } else {
+                    $bannerFileInputWrapper.slideUp(120);
+                    // fallback to main image if present
+                    if ($mainFile[0] && $mainFile[0].files && $mainFile[0].files[0]) {
+                        var reader2 = new FileReader();
+                        reader2.onload = function (e) { setPreview(e.target.result, 50, 50); };
+                        reader2.readAsDataURL($mainFile[0].files[0]);
+                    } else {
+                        // if no main file selected, try to use existing gallery image (initialImage)
+                        var initialImage = $preview.data('initial-image');
+                        if (initialImage) { setPreview(initialImage, clamp($preview.data('initial-x')), clamp($preview.data('initial-y'))); }
+                    }
+                }
+            });
+
             $sliderFile.on('change', function (event) {
                 var file = event.target.files[0];
 
@@ -245,6 +292,19 @@
                 var reader = new FileReader();
                 reader.onload = function (e) {
                     setPreview(e.target.result, 50, 50);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // when main image changes, update banner preview if banner uses main image
+            $mainFile.on('change', function (event) {
+                var file = event.target.files[0];
+                if (!file) { return; }
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    if ($sliderCheckbox.is(':checked') && !$bannerDifferent.is(':checked')) {
+                        setPreview(e.target.result, 50, 50);
+                    }
                 };
                 reader.readAsDataURL(file);
             });
@@ -300,6 +360,11 @@
             }
 
             toggleSlider();
+
+            // ensure banner input visibility reflects saved state on load
+            if ($bannerDifferent.is(':checked')) {
+                $bannerFileInputWrapper.show();
+            }
         });
     </script>
 @endsection

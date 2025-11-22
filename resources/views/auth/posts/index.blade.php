@@ -22,6 +22,7 @@
         <div class="row">
             <div class="container btn-addnew">
                 <a href="{{ route('posts.create') }}" type="submit" class="btn btn-gradient-primary me-2">Nueva Noticia</a>
+                <a href="{{ route('categories.index') }}" class="btn btn-outline-secondary">Administrar Categorías</a>
             </div>
         </div>
         <div class="row">
@@ -31,46 +32,58 @@
                         @if (count($posts) > 0)
                             <div id="postsTableWrapper">
                                 <table id="news-table" class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th> Imagen </th>
-                                        <th> Titulo </th>
-                                        <th> Descripcion </th>
-                                        <th> Fecha </th>
-                                        <th> Banner </th>
-                                        <th> Slider home </th>
-                                        <th> Status </th>
-                                        <th> Action </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($posts as $post)
+                                    <thead>
                                         <tr>
-                                            <td class="py-1">
-                                                <img src="{{ $post->gallery->image }}" alt="image" />
-                                            </td>
-                                            <td> {{ $post->title }} </td>
-                                            <td>
-                                                {!! limitHtml($post->description, 10, '...') !!}
-                                            </td>
-                                            <td> {{ date('d M Y', strtotime($post->created_at)); }} </td>
-                                            <td> {{ $post->is_slider ? 'Si' : 'No' }} </td>
-                                            <td> {{ $post->is_news_slider ? 'Si' : 'No' }} </td>
-                                            <td class="text-center check-status-column">
-                                                @if ($post->is_published == 1)
-                                                    <span class="mdi mdi-check"></span>
-                                                @else
-                                                    <span class="mdi mdi-close"></span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-secondary btn-preview" data-url="{{ route('posts.preview', $post->id) }}" title="Vista previa"><i class="fas fa-eye"></i></button>
-                                                <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
-                                                <button type="button" class="btn btn-sm btn-danger btn-delete" data-url="{{ route('posts.destroy', $post->id) }}"><i class="fas fa-trash"></i></button>
-                                            </td>
+                                            <th> Imagen </th>
+                                            <th> Titulo </th>
+                                            <th> Descripcion </th>
+                                            <th> Fecha </th>
+                                            <th> Banner </th>
+                                            <th> Slider home </th>
+                                            <th> Publicar </th>
+                                            <th> Action </th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($posts as $post)
+                                            <tr>
+                                                <td class="py-1">
+                                                    <img src="{{ $post->gallery->image }}" alt="image" />
+                                                </td>
+                                                <td> {{ $post->title }} </td>
+                                                <td>
+                                                    {!! limitHtml($post->description, 10, '...') !!}
+                                                </td>
+                                                <td> {{ $post->created_at->locale('es')->isoFormat('D [de] MMMM YYYY') }} </td>
+                                                <td class="text-center check-status-column">
+                                                    @if ($post->is_slider == 1)
+                                                        <span class="mdi mdi-check"></span>
+                                                    @else
+                                                        <span class="mdi mdi-close"></span>
+                                                    @endif
+                                                </td>
+                                                <td class="text-center check-status-column">
+                                                    @if ($post->is_news_slider == 1)
+                                                        <span class="mdi mdi-check"></span>
+                                                    @else
+                                                        <span class="mdi mdi-close"></span>
+                                                    @endif
+                                                </td>
+                                                <td class="text-center check-status-column">
+                                                    @if ($post->is_published == 1)
+                                                        <span class="mdi mdi-check"></span>
+                                                    @else
+                                                        <span class="mdi mdi-close"></span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-preview btn-inverse-info" data-url="{{ route('posts.preview', $post->id) }}" title="Vista previa"><i class="fas fa-eye"></i></button>
+                                                    <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
+                                                    <button type="button" class="btn btn-sm btn-danger btn-delete" data-url="{{ route('posts.destroy', $post->id) }}"><i class="fas fa-trash"></i></button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
                                 </table>
                             </div>
 
@@ -91,15 +104,12 @@
 
 @section('scripts')
     <script src="{{ asset('assets/website/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-    <script>
-        $(document).ready(function() {
-            $('#news-table').DataTable();
-        });
-    </script>
 
     <script>
         $(function() {
-            var table = $('#news-table').DataTable();
+            var table = $('#news-table').DataTable({
+                language: { url: '{{ asset("assets/website/plugins/datatables/lang/es-ES.json") }}' }
+            });
             var deleteUrl = null;
             var $rowToDelete = null;
             var $previewModal = null;

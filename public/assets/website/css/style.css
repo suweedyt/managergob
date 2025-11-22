@@ -632,7 +632,6 @@ input[type=tel]:focus {
 --*/
 header {
   background: #fff;
-  padding: 20px 0;
 }
 header .navbar {
   margin-bottom: 0px;
@@ -659,7 +658,6 @@ header .navbar-default .navbar-nav li a:hover {
 
 .navigation {
   background: #fff;
-  padding: 20px 0;
 }
 .navigation .navbar {
   margin-bottom: 0px;
@@ -2601,7 +2599,6 @@ ul.dropdown-menu li {
 .footer {
   background: #F5F5F5;
   text-align: center;
-  padding: 80px 0;
 }
 .footer p {
   font-size: 13px;
