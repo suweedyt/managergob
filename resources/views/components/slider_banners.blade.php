@@ -21,13 +21,17 @@
                         // Ensure slider positions are numeric and within 0-100, default to center (50%)
                         $positionX = is_numeric($post->slider_position_x) ? max(0, min(100, (int) $post->slider_position_x)) : 50;
                         $positionY = is_numeric($post->slider_position_y) ? max(0, min(100, (int) $post->slider_position_y)) : 50;
+
+                        $bannerDescription = $post->banner_short_description
+                            ? $post->banner_short_description
+                            : limitHtml($post->description, 150, '...');
                     @endphp
 
                     <div class="carousel-item @if($index == 0) active @endif">
                         <div class="d-block w-100 carousel-slide" style="background-image: url('{{ $image }}'); background-size: cover; background-position: {{ $positionX }}% {{ $positionY }}%; height: 520px;">
                             <div class="carousel-caption d-none d-md-block text-start" style="background: rgba(0,0,0,0.4); padding: 20px;">
                                 <h3>{{ $post->title }}</h3>
-                                <p>{!! limitHtml($post->description, 150, '...') !!}</p>
+                                <p class="shortDescription-banner">{!! $bannerDescription !!}</p>
                                 <a href="{{ route('news.single', $post->id) }}" class="btn btn-primary">Leer más</a>
                             </div>
                         </div>

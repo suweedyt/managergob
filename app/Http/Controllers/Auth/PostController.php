@@ -58,6 +58,9 @@ class PostController extends Controller
             $sliderGallery = null;
             $sliderPositionX = $request->input('slider_position_x', 50);
             $sliderPositionY = $request->input('slider_position_y', 50);
+            $bannerShortDescription = $request->boolean('is_slider') && $request->filled('banner_short_description')
+                ? trim($request->input('banner_short_description'))
+                : null;
 
             if ($request->has('file')) {
                 $file = $request->file;
@@ -70,8 +73,7 @@ class PostController extends Controller
                 ]);
             }
 
-            // Handle slider image if checkbox is set
-            if ($request->boolean('is_slider') && $request->hasFile('slider_file')) {
+            if ($request->boolean('is_slider') && $request->boolean('banner_use_different') && $request->hasFile('slider_file')) {
                 $sfile = $request->file('slider_file');
                 $sFileName = time() . '_slider_' . $sfile->getClientOriginalName();
                 $sliderPath = public_path('images/posts');
@@ -82,6 +84,15 @@ class PostController extends Controller
                 ]);
             }
 
+            $sliderGalleryId = null;
+            if ($request->boolean('is_slider')) {
+                if ($request->boolean('banner_use_different')) {
+                    $sliderGalleryId = $sliderGallery?->id;
+                } else {
+                    $sliderGalleryId = $gallery?->id;
+                }
+            }
+
             Post::create([
                 'category_id' => $request->category,
                 'is_published' => $request->is_published,
@@ -90,9 +101,10 @@ class PostController extends Controller
                 'gallery_id' => $gallery?->id,
                 'is_slider' => $request->boolean('is_slider'),
                 'is_news_slider' => $request->boolean('is_news_slider'),
-                'slider_gallery_id' => $sliderGallery?->id,
-                'slider_position_x' => $sliderPositionX,
-                'slider_position_y' => $sliderPositionY,
+                'slider_gallery_id' => $sliderGalleryId,
+                'slider_position_x' => $request->boolean('is_slider') ? $sliderPositionX : null,
+                'slider_position_y' => $request->boolean('is_slider') ? $sliderPositionY : null,
+                'banner_short_description' => $bannerShortDescription,
             ]);
 
             DB::commit();
@@ -101,7 +113,7 @@ class PostController extends Controller
             dd($e->getMessage());
         }
 
-    session()->flash('alert-success', 'Noticia creada correctamente');
+        session()->flash('alert-success', 'Noticia creada correctamente');
         return to_route('posts.index');
     }
 
@@ -139,29 +151,27 @@ class PostController extends Controller
 
             $post = Post::findOrFail($id);
 
-            // Handle main image replacement
+            $bannerShortDescription = $request->boolean('is_slider') && $request->filled('banner_short_description')
+                ? trim($request->input('banner_short_description'))
+                : null;
+
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
                 $fileName = time() . $file->getClientOriginalName();
                 $imagePath = public_path('images/posts');
                 $file->move($imagePath, $fileName);
 
-                // create new gallery record
                 $newGallery = Gallery::create(['image' => $fileName]);
 
-                // update post gallery_id
                 $post->gallery_id = $newGallery->id;
             }
 
-            // Handle slider/banner logic
             if ($request->boolean('is_slider')) {
                 $post->is_slider = true;
 
                 $bannerUseDifferent = $request->boolean('banner_use_different');
 
-                // If a new slider_file was uploaded, always create new slider gallery and replace existing
                 if ($request->hasFile('slider_file')) {
-                    // delete old slider gallery file/record if exists and different
                     if ($post->sliderGallery && ($post->sliderGallery->id !== ($post->gallery_id ?? null))) {
                         $oldImage = $post->sliderGallery->image;
                         $oldPath = public_path('images/posts/' . $oldImage);
@@ -180,19 +190,11 @@ class PostController extends Controller
                     $post->slider_gallery_id = $newSliderGallery->id;
 
                 } else {
-                    // No new slider file uploaded
                     if ($bannerUseDifferent) {
-                        // User wants a different banner image.
-                        // Keep existing sliderGallery only if it already was different from main image.
-                        if ($post->slider_gallery_id && $post->slider_gallery_id != ($post->gallery_id ?? null)) {
-                            // keep existing different banner
-                        } else {
-                            // ensure there is no banner image so user must upload one
+                        if (!($post->slider_gallery_id && $post->slider_gallery_id != ($post->gallery_id ?? null))) {
                             $post->slider_gallery_id = null;
                         }
                     } else {
-                        // User does NOT want a different banner: use main image as banner.
-                        // If there is an existing sliderGallery that is different from main, remove it.
                         if ($post->sliderGallery && ($post->sliderGallery->id !== ($post->gallery_id ?? null))) {
                             $oldImage = $post->sliderGallery->image;
                             $oldPath = public_path('images/posts/' . $oldImage);
@@ -202,17 +204,18 @@ class PostController extends Controller
                             $post->sliderGallery->delete();
                         }
 
-                        // point slider to the main gallery (if any). If no main gallery, null.
                         $post->slider_gallery_id = $post->gallery_id ?? null;
                     }
                 }
 
-                // Save slider coordinates (default to existing values or 50 if not set)
                 $post->slider_position_x = $request->input('slider_position_x', $post->slider_position_x ?? 50);
                 $post->slider_position_y = $request->input('slider_position_y', $post->slider_position_y ?? 50);
             } else {
-                // if unchecked, disable slider and remove distinct banner image
                 $post->is_slider = false;
+                $post->slider_position_x = null;
+                $post->slider_position_y = null;
+                $post->slider_gallery_id = null;
+
                 if ($post->sliderGallery && ($post->sliderGallery->id !== ($post->gallery_id ?? null))) {
                     $oldImage = $post->sliderGallery->image;
                     $oldPath = public_path('images/posts/' . $oldImage);
@@ -221,8 +224,6 @@ class PostController extends Controller
                     }
                     $post->sliderGallery->delete();
                 }
-                // unset slider_gallery_id
-                $post->slider_gallery_id = null;
             }
 
             $post->is_news_slider = $request->boolean('is_news_slider');
@@ -231,6 +232,7 @@ class PostController extends Controller
             $post->category_id = $request->category;
             $post->is_published = $request->is_published;
             $post->description = $request->description;
+            $post->banner_short_description = $bannerShortDescription;
 
             $post->save();
 

@@ -1,3 +1,9 @@
+
+.shortDescription-banner {
+    color: #fff;
+    font-size: 1rem;
+}
+
 .arrow-btn-nav {
     background: transparent;
     border: 0;
@@ -7,6 +13,7 @@
     font-size: 25px;
     color: #000;
     border: #000 solid 1px;
+    background-color: #fff;
     border-radius: 50%;
     width: 45px;
 }

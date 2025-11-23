@@ -1,12 +1,14 @@
 <?php
 
+use App\Http\Controllers\Auth\AdminSettingController;
 use App\Http\Controllers\Auth\DashboardController;
-use App\Http\Controllers\Auth\PostController;
-use App\Http\Controllers\WebsiteController;
-use App\Http\Controllers\Auth\TramiteSettingController;
-use App\Http\Controllers\Auth\TramiteController;
 use App\Http\Controllers\Auth\CategoryController;
 use App\Http\Controllers\Auth\FeatureSettingController;
+use App\Http\Controllers\Auth\PostController;
+use App\Http\Controllers\Auth\SiteSettingController;
+use App\Http\Controllers\Auth\TramiteController;
+use App\Http\Controllers\Auth\TramiteSettingController;
+use App\Http\Controllers\WebsiteController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -30,7 +32,8 @@ Route::prefix('auth')->middleware(['auth'])->group(function () {
     Route::resource('tramites', TramiteController::class);
     Route::resource('tramitessettings', TramiteSettingController::class);
     Route::resource('featuresettings', FeatureSettingController::class)->only(['index', 'store']);
+    Route::resource('admin-settings', AdminSettingController::class)->only(['index', 'store']);
 
     Route::get('posts/{post}/preview', [PostController::class, 'preview'])->name('posts.preview');
-    Route::resource('site-settings', \App\Http\Controllers\Auth\SiteSettingController::class)->only(['index', 'store']);
+    Route::resource('site-settings', SiteSettingController::class)->only(['index', 'store']);
 });

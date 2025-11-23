@@ -85,82 +85,134 @@
                             @csrf
                             @method('PUT')
 
-                            <div class="form-group">
-                                <label for="title">Titulo</label>
-                                <input type="text" name="title" class="form-control" id="title" placeholder="Titulo" value="{{ old('title', $post->title) }}" required>
-                            </div>
+                            <div class="accordion" id="postEditAccordion">
+                                <div class="accordion-item mb-3">
+                                    <h2 class="accordion-header" id="postEditGeneralHeading">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#postEditGeneral" aria-expanded="true" aria-controls="postEditGeneral">
+                                            Configuración general
+                                        </button>
+                                    </h2>
+                                    <div id="postEditGeneral" class="accordion-collapse collapse show" aria-labelledby="postEditGeneralHeading" data-bs-parent="#postEditAccordion">
+                                        <div class="accordion-body">
+                                            <div class="form-group">
+                                                <label for="title">Titulo</label>
+                                                <input type="text" name="title" class="form-control" id="title" placeholder="Titulo" value="{{ old('title', $post->title) }}" required>
+                                            </div>
 
-                            <div class="form-group">
-                                <label for="category">Categoria</label>
-                                <select class="form-control" id="category" name="category" required>
-                                    <option value="" disabled>Seleccione una categoria</option>
-                                    @foreach ($categories as $category)
-                                        <option @selected(old('category', $post->category_id) == $category->id) value="{{ $category->id }}">{{ $category->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                                            <div class="form-group">
+                                                <label for="category">Categoria</label>
+                                                <select class="form-control" id="category" name="category" required>
+                                                    <option value="" disabled>Seleccione una categoria</option>
+                                                    @foreach ($categories as $category)
+                                                        <option @selected(old('category', $post->category_id) == $category->id) value="{{ $category->id }}">{{ $category->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
 
-                            <div class="form-group form-check form-switch">
-                                <input type="hidden" name="is_published" value="0">
-                                <input class="form-check-input" type="checkbox" role="switch" id="is_published" name="is_published" value="1" @checked(old('is_published', $post->is_published) == 1)>
-                                <label class="form-check-label" for="is_published">Publicar</label>
-                            </div>
+                                            <div class="form-group form-check form-switch">
+                                                <input type="hidden" name="is_published" value="0">
+                                                <input class="form-check-input" type="checkbox" role="switch" id="is_published" name="is_published" value="1" @checked(old('is_published', $post->is_published) == 1)>
+                                                <label class="form-check-label" for="is_published">Publicar</label>
+                                            </div>
 
-                            <div class="form-group">
-                                <label for="file">Imagen Principal (dejar vacío para no cambiar)</label>
-                                <div class="input-group col-xs-12">
-                                    <input type="file" name="file" id="main_file" class="form-control file-upload-info" placeholder="Cargar Imagen Principal" accept="image/*">
-                                </div>
-                                @if($post->gallery)
-                                    <div class="mt-2">
-                                        <img src="{{ asset($post->gallery->image) }}" alt="principal" style="max-width:200px;">
-                                    </div>
-                                @endif
-                            </div>
-
-                            <div class="form-group form-check form-switch">
-                                <input type="hidden" name="is_slider" value="0">
-                                <input class="form-check-input" type="checkbox" role="switch" id="is_slider" name="is_slider" value="1" @checked(old('is_slider', $post->is_slider))>
-                                <label class="form-check-label" for="is_slider">Mostrar en Banner</label>
-                            </div>
-
-                            <div class="form-group" id="slider-file-group" style="display: none;">
-                                <label>Opciones de Banner</label>
-
-                                <div class="form-group form-check">
-                                    <input type="hidden" name="banner_use_different" value="0">
-                                    <input type="checkbox" class="form-check-input" id="banner_use_different" name="banner_use_different" value="1" @checked(old('banner_use_different', isset($post->sliderGallery) && $post->sliderGallery && (($post->gallery->id ?? null) !== ($post->sliderGallery->id ?? null))))>
-                                    <label class="form-check-label" for="banner_use_different">Usar imagen distinta para el banner</label>
-                                </div>
-
-                                <div id="banner-file-input" style="display: none;">
-                                    <label>Cargar Imagen para banner (dejar vacío para no cambiar)</label>
-                                    <div class="input-group col-xs-12">
-                                        <input type="file" name="slider_file" id="slider_file" class="form-control file-upload-info" placeholder="Cargar Imagen para slider" accept="image/*">
+                                            <div class="form-group">
+                                                <label for="file">Imagen Principal (dejar vacío para no cambiar)</label>
+                                                <div class="input-group col-xs-12">
+                                                    <input type="file" name="file" id="main_file" class="form-control file-upload-info" placeholder="Cargar Imagen Principal" accept="image/*">
+                                                </div>
+                                                @if($post->gallery)
+                                                    <div class="mt-2">
+                                                        <img src="{{ asset($post->gallery->image) }}" alt="principal" style="max-width:200px;">
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <input type="hidden" name="slider_position_x" id="slider_position_x" value="{{ old('slider_position_x', $post->slider_position_x ?? 50) }}">
-                                <input type="hidden" name="slider_position_y" id="slider_position_y" value="{{ old('slider_position_y', $post->slider_position_y ?? 50) }}">
-                                <div class="slider-preview-wrapper" id="slider_preview_wrapper">
-                                    <div class="slider-preview" id="slider_preview" data-initial-image="{{ $post->sliderGallery ? asset($post->sliderGallery->image) : ($post->gallery ? asset($post->gallery->image) : '') }}" data-initial-x="{{ $post->slider_position_x ?? 50 }}" data-initial-y="{{ $post->slider_position_y ?? 50 }}">
-                                        <div class="slider-preview-overlay">Arrastra para ajustar la posición</div>
+                                <div class="accordion-item mb-3">
+                                    <h2 class="accordion-header" id="postEditBannerHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#postEditBanner" aria-expanded="false" aria-controls="postEditBanner">
+                                            Configuración de banner
+                                        </button>
+                                    </h2>
+                                    <div id="postEditBanner" class="accordion-collapse collapse" aria-labelledby="postEditBannerHeading" data-bs-parent="#postEditAccordion">
+                                        <div class="accordion-body">
+                                            <div class="form-group form-check form-switch mb-3">
+                                                <input type="hidden" name="is_slider" value="0">
+                                                <input class="form-check-input" type="checkbox" role="switch" id="is_slider" name="is_slider" value="1" @checked(old('is_slider', $post->is_slider))>
+                                                <label class="form-check-label" for="is_slider">Mostrar en Banner</label>
+                                            </div>
+
+                                            <div class="form-group mb-3" id="banner_short_description_group">
+                                                <label for="banner_short_description">Descripción corta para banner</label>
+                                                <textarea name="banner_short_description" id="banner_short_description" class="form-control" maxlength="180" rows="3" placeholder="Ingresa una descripción corta para mostrar en el banner">{{ old('banner_short_description', $post->banner_short_description) }}</textarea>
+                                                <small class="form-text text-muted">Se mostrará cuando la noticia sea destacada como banner.</small>
+                                            </div>
+
+                                            <div class="form-group" id="slider-file-group" style="display: none;">
+                                                <label>Opciones de Banner</label>
+
+                                                <div class="form-group form-check form-switch mb-3">
+                                                    <input type="hidden" name="banner_use_different" value="0">
+                                                    <input type="checkbox" role="switch" class="form-check-input" id="banner_use_different" name="banner_use_different" value="1" @checked(old('banner_use_different', isset($post->sliderGallery) && $post->sliderGallery && (($post->gallery->id ?? null) !== ($post->sliderGallery->id ?? null))))>
+                                                    <label class="form-check-label" for="banner_use_different">Usar imagen distinta para el banner</label>
+                                                </div>
+
+                                                <div id="banner-file-input" style="display: none;">
+                                                    <label>Cargar Imagen para banner (dejar vacío para no cambiar)</label>
+                                                    <div class="input-group col-xs-12">
+                                                        <input type="file" name="slider_file" id="slider_file" class="form-control file-upload-info" placeholder="Cargar Imagen para slider" accept="image/*">
+                                                    </div>
+                                                </div>
+
+                                                <input type="hidden" name="slider_position_x" id="slider_position_x" value="{{ old('slider_position_x', $post->slider_position_x ?? 50) }}">
+                                                <input type="hidden" name="slider_position_y" id="slider_position_y" value="{{ old('slider_position_y', $post->slider_position_y ?? 50) }}">
+                                                <div class="slider-preview-wrapper" id="slider_preview_wrapper">
+                                                    <div class="slider-preview" id="slider_preview" data-initial-image="{{ $post->sliderGallery ? asset($post->sliderGallery->image) : ($post->gallery ? asset($post->gallery->image) : '') }}" data-initial-x="{{ $post->slider_position_x ?? 50 }}" data-initial-y="{{ $post->slider_position_y ?? 50 }}">
+                                                        <div class="slider-preview-overlay">Arrastra para ajustar la posición</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item mb-3">
+                                    <h2 class="accordion-header" id="postEditNewsSliderHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#postEditNewsSlider" aria-expanded="false" aria-controls="postEditNewsSlider">
+                                            Slider del home
+                                        </button>
+                                    </h2>
+                                    <div id="postEditNewsSlider" class="accordion-collapse collapse" aria-labelledby="postEditNewsSliderHeading" data-bs-parent="#postEditAccordion">
+                                        <div class="accordion-body">
+                                            <div class="form-group form-check form-switch">
+                                                <input type="hidden" name="is_news_slider" value="0">
+                                                <input class="form-check-input" type="checkbox" role="switch" id="is_news_slider" name="is_news_slider" value="1" @checked(old('is_news_slider', $post->is_news_slider))>
+                                                <label class="form-check-label" for="is_news_slider">Mostrar slider home</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="postEditDescriptionHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#postEditDescription" aria-expanded="false" aria-controls="postEditDescription">
+                                            Descripción de la noticia
+                                        </button>
+                                    </h2>
+                                    <div id="postEditDescription" class="accordion-collapse collapse" aria-labelledby="postEditDescriptionHeading" data-bs-parent="#postEditAccordion">
+                                        <div class="accordion-body">
+                                            <div class="form-group">
+                                                <label for="description">Descripcion</label>
+                                                <textarea id="summernote" class="form-control" name="description" minlength="10" required>{{ old('description', $post->description) }}</textarea>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="form-group form-check form-switch">
-                                <input type="hidden" name="is_news_slider" value="0">
-                                <input class="form-check-input" type="checkbox" role="switch" id="is_news_slider" name="is_news_slider" value="1" @checked(old('is_news_slider', $post->is_news_slider))>
-                                <label class="form-check-label" for="is_news_slider">Mostrar slider home</label>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="description">Descripcion</label>
-                                <textarea id="summernote" class="form-control" name="description" minlength="10" required>{{ old('description', $post->description) }}</textarea>
-                            </div>
-
-                            <button type="submit" class="btn btn-gradient-primary me-2">Actualizar</button>
+                            <button type="submit" class="btn btn-gradient-primary me-2 mt-3">Actualizar</button>
                         </form>
                     </div>
                 </div>
@@ -186,6 +238,7 @@
             var $posX = $('#slider_position_x');
             var $posY = $('#slider_position_y');
             var $helper = $preview.find('.slider-preview-overlay');
+            var $bannerShortDescriptionGroup = $('#banner_short_description').closest('.form-group');
             var dragging = false;
             var activePointerId = null;
 
@@ -248,9 +301,11 @@
             function toggleSlider() {
                 if ($sliderCheckbox.is(':checked')) {
                     $sliderGroup.slideDown(150);
+                    $bannerShortDescriptionGroup.slideDown(150);
                     showPreview();
                 } else {
                     $sliderGroup.slideUp(150);
+                    $bannerShortDescriptionGroup.slideUp(150);
                     $previewWrapper.hide();
                 }
             }

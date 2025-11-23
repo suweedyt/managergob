@@ -31,10 +31,10 @@
             <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
                 <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
                     <a class="navbar-brand brand-logo" href="{{ route('auth.dashboard') }}">
-                        <img src="{{ asset('assets/auth/images/logo_black.svg') }}" alt="logo" />
+                        <img src="{{ $adminSettings && $adminSettings->logo_full ? asset('images/settings/' . $adminSettings->logo_full) : asset('assets/auth/images/logo_black.svg') }}" alt="logo" />
                     </a>
                     <a class="navbar-brand brand-logo-mini" href="{{ route('auth.dashboard') }}">
-                        <img src="{{ asset('assets/auth/images/logo_mini.svg') }}" alt="logo" />
+                        <img src="{{ $adminSettings && $adminSettings->logo_mini ? asset('images/settings/' . $adminSettings->logo_mini) : asset('assets/auth/images/logo_mini.svg') }}" alt="logo" />
                     </a>
                 </div>
                 <div class="navbar-menu-wrapper d-flex align-items-stretch">
@@ -154,20 +154,22 @@
                                 </ul>
                             </div>
                         </li>
+
+                        @php $isAdminConfig = request()->routeIs('admin-settings.*'); @endphp
+                        <li class="nav-item">
+                            <a class="nav-link {{ $isAdminConfig ? 'active' : '' }}" href="{{ route('admin-settings.index') }}">
+                                <span class="menu-title">Configuración admin</span>
+                                <i class="mdi mdi-tune-vertical menu-icon"></i>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
 
                 <!-- content page -->
                 <div class="main-panel">
 
-                    @yield('section');
+                    @yield('section')
 
-                    <!-- footer admin -->
-                    <footer class="footer">
-                        <div class="container-fluid d-flex justify-content-between">
-                            <span class="text-muted d-block text-center text-sm-start d-sm-inline-block">Copyright © 2024</span>
-                        </div>
-                    </footer>
                 </div>
             </div>
         </div>

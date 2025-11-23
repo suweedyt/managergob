@@ -21,3 +21,9 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+/public/images/settings/*
+!/public/images/settings/.gitkeep
+/public/images/post/*
+!/public/images/post/.gitkeep
+/public/images/tramites/*
+!/public/images/tramites/.gitkeep
