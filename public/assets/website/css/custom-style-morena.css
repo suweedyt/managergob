@@ -11,6 +11,20 @@
     color: #fff;
 }
 
+/* Active nav link style for website header */
+.navigation .navbar .navbar-nav .nav-link.active {
+    color: #ffffff !important;
+    background: rgba(97, 18, 50, 0.14);
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.navigation .navbar .navbar-nav .nav-link:hover {
+    color: #ffffff !important;
+    background: rgba(97, 18, 50, 0.08);
+    border-radius: 6px;
+}
+
 /* Feature */
 .feature {
     padding: 80px;

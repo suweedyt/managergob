@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
                 $settings->footer_socials = [];
             }
 
-            $view->with('settings', $settings);
+            $view->with('siteSettings', $settings);
         });
 
         View::composer('layouts.auth', function ($view) {

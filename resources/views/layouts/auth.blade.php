@@ -139,6 +139,27 @@
                             </a>
                         </li>
 
+                        @php
+                            $isContacto = request()->routeIs('locations.*') || request()->routeIs('contactsettings.*');
+                        @endphp
+                        <li class="nav-item">
+                            <a class="nav-link {{ $isContacto ? '' : 'collapsed' }}" data-bs-toggle="collapse" href="#contacto-config" aria-expanded="{{ $isContacto ? 'true' : 'false' }}" aria-controls="contacto-config">
+                                <span class="menu-title">Contacto</span>
+                                <i class="menu-arrow"></i>
+                                <i class="mdi mdi-map-marker menu-icon"></i>
+                            </a>
+                            <div class="collapse {{ $isContacto ? 'show' : '' }}" id="contacto-config">
+                                <ul class="nav flex-column sub-menu">
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('locations.*') ? 'active' : '' }}" href="{{ route('locations.index') }}">Ubicaciones</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('contactsettings.*') ? 'active' : '' }}" href="{{ route('contactsettings.index') }}">Configuraciones</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
                         @php $isSiteConfig = request()->routeIs('site-settings.*'); @endphp
                         <li class="nav-item">
                             <a class="nav-link {{ $isSiteConfig ? '' : 'collapsed' }}" data-bs-toggle="collapse" href="#site-config" aria-expanded="{{ $isSiteConfig ? 'true' : 'false' }}" aria-controls="site-config">

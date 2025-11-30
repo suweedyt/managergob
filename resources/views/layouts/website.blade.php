@@ -55,18 +55,25 @@
                             </button>
 
                             <div class="collapse navbar-collapse ml-auto" id="navbarsExample09">
+                                @php
+                                    $isHome = request()->routeIs('home') || request()->is('/');
+                                    $isTramites = request()->routeIs('tramites*') || request()->is('tramites*');
+                                    $isNews = request()->routeIs('news*') || request()->is('news*');
+                                    $isContact = request()->routeIs('contact*') || request()->is('contact*');
+                                @endphp
+
                                 <ul class="navbar-nav ml-auto">
-                                    <li class="nav-item active">
-                                        <a class="nav-link" href="{{ route('home') }}">Inicio</a>
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ $isHome ? 'active' : '' }}" href="{{ route('home') }}">Inicio</a>
                                     </li>
-                                    <li class="nav-item @@procedures">
-                                        <a class="nav-link" href="{{ route('tramites') }}">Trámites</a>
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ $isTramites ? 'active' : '' }}" href="{{ route('tramites') }}">Trámites</a>
                                     </li>
-                                    <li class="nav-item @@news">
-                                        <a class="nav-link" href="{{ route('news') }}">Noticias</a>
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ $isNews ? 'active' : '' }}" href="{{ route('news') }}">Noticias</a>
                                     </li>
-                                    <li class="nav-item @@contact">
-                                        <a class="nav-link" href="#">Contacto</a>
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ $isContact ? 'active' : '' }}" href="{{ route('contact') }}">Contacto</a>
                                     </li>
                                 </ul>
                             </div>

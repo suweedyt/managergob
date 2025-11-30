@@ -8,6 +8,8 @@ use App\Http\Controllers\Auth\PostController;
 use App\Http\Controllers\Auth\SiteSettingController;
 use App\Http\Controllers\Auth\TramiteController;
 use App\Http\Controllers\Auth\TramiteSettingController;
+use App\Http\Controllers\Auth\LocationController;
+use App\Http\Controllers\Auth\ContactSettingController;
 use App\Http\Controllers\WebsiteController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +21,7 @@ Route::controller(WebsiteController::class)->group(function () {
     Route::get('/news/single/{new}',  'show')->name('news.single');
     Route::get('/tramites', 'tramites')->name('tramites');
     Route::get('/tramites/{tramite}', 'tramiteShow')->name('tramites.show');
+    Route::get('/contact', 'contact')->name('contact');
 });
 
 Auth::routes();
@@ -28,9 +31,11 @@ Route::prefix('auth')->middleware(['auth'])->group(function () {
 
     Route::resource('posts', PostController::class);
     Route::resource('categories', CategoryController::class)->except(['show']);
-
     Route::resource('tramites', TramiteController::class);
+    Route::resource('locations', LocationController::class);
+
     Route::resource('tramitessettings', TramiteSettingController::class);
+    Route::resource('contactsettings', ContactSettingController::class)->only(['index', 'store']);
     Route::resource('featuresettings', FeatureSettingController::class)->only(['index', 'store']);
     Route::resource('admin-settings', AdminSettingController::class)->only(['index', 'store']);
 

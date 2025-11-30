@@ -6,6 +6,8 @@ use App\Models\FeatureSetting;
 use App\Models\Post;
 use App\Models\Tramite;
 use App\Models\TramiteSetting;
+use App\Models\Location;
+use App\Models\ContactSetting;
 
 class WebsiteController extends Controller
 {
@@ -35,7 +37,7 @@ class WebsiteController extends Controller
             ->orderBy('id', 'desc')
             ->take(5)
             ->get();
-    $posts = Post::where('is_published', Post::Published)->paginate(2);
+        $posts = Post::where('is_published', Post::Published)->paginate(2);
         return view('website.news.index', ['posts' => $posts, 'latestsPosts' => $latestsPosts]);
     }
 
@@ -59,5 +61,17 @@ class WebsiteController extends Controller
         $tramiteSettings = TramiteSetting::first();
         $featureSetting = FeatureSetting::first();
         return view('website.tramites.index', ['tramites' => $tramites, 'openId' => $tramite->id, 'tramiteSettings' => $tramiteSettings]);
+    }
+
+    public function contact()
+    {
+        $locations = Location::where('is_published', true)
+            ->orderBy('order', 'asc')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $contactSettings = ContactSetting::first();
+
+        return view('website.locations.contact', ['locations' => $locations, 'contactSettings' => $contactSettings]);
     }
 }
