@@ -13,6 +13,8 @@ class Tramite extends Model
         'logo_image',
         'description',
         'content',
+        'mode',
+        'redirect_url',
         'is_published',
     ];
 

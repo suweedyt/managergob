@@ -7,6 +7,7 @@ use App\Models\FeatureSetting;
 use App\Models\SiteSetting;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated as AuthRedirectMiddleware;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -38,6 +39,21 @@ class AppServiceProvider extends ServiceProvider
                 'siteSettings' => $siteSettings,
                 'adminSettings' => $adminSettings,
             ]);
+        });
+
+        // Ensure RedirectIfAuthenticated redirects to admin dashboard when user is authenticated
+        AuthRedirectMiddleware::redirectUsing(function ($request) {
+            // prefer the admin dashboard route if present
+            if (method_exists($request->route(), 'getName') && $request->route()) {
+                // always redirect authenticated users to the admin dashboard
+            }
+
+            if (app('router')->has('auth.dashboard')) {
+                return route('auth.dashboard');
+            }
+
+            // fallback to existing behavior (home)
+            return null;
         });
     }
 }

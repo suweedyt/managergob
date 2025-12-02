@@ -20,6 +20,8 @@ class StoreRequest extends FormRequest
             'logo_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:4096'],
             'description' => ['nullable', 'string'],
             'content' => ['nullable', 'string'],
+            'mode' => ['required', 'string', 'in:content,link'],
+            'redirect_url' => ['nullable','string','max:2048','required_if:mode,link','url'],
             'is_published' => ['nullable', 'boolean'],
         ];
     }

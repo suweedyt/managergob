@@ -54,6 +54,20 @@ class WebsiteController extends Controller
         return view('website.tramites.index', ['tramites' => $tramites, 'tramiteSettings' => $tramiteSettings, 'featureSetting' => $featureSetting]);
     }
 
+    /**
+     * Display an external link or pdf for a tramite configured as link.
+     */
+    public function tramiteLink(Tramite $tramite)
+    {
+        if ($tramite->mode !== 'link' || empty($tramite->redirect_url)) {
+            // Not configured as link — redirect to the tramite public view
+            return to_route('tramites.show', ['tramite' => $tramite->id]);
+        }
+
+        // Pass the redirect URL to a dedicated view which will embed or load it
+        return view('website.tramites.link', ['tramite' => $tramite]);
+    }
+
     public function tramiteShow(Tramite $tramite)
     {
         // Show the tramites index but ask it to open the selected item

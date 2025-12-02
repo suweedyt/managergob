@@ -389,8 +389,8 @@
         function renderPredictions(predictions) {
             autocompleteDropdown.innerHTML = '';
 
-            if (!predictions || !predictions.length) {
-                autocompleteDropdown.classList.remove('show');
+                if (!predictions || !predictions.length) {
+                autocompleteDropdown.classList.remove('active');
                 return;
             }
 
@@ -408,7 +408,7 @@
                 autocompleteDropdown.appendChild(item);
             });
 
-            autocompleteDropdown.classList.add('show');
+            autocompleteDropdown.classList.add('active');
         }
 
         function searchPredictions(query) {
@@ -471,34 +471,36 @@
             document.head.appendChild(script);
         }
 
-        addressInput.addEventListener('input', (event) => {
-            debounceSearch(event.target.value);
-        });
-
-        addressInput.addEventListener('focus', () => {
-            if (autocompleteDropdown.children.length) {
-                autocompleteDropdown.classList.add('show');
-            }
-        });
-
-        document.addEventListener('click', (event) => {
-            if (!autocompleteDropdown.contains(event.target) && event.target !== addressInput) {
-                autocompleteDropdown.classList.remove('show');
-            }
-        });
-
-        if (searchButton) {
-            searchButton.addEventListener('click', () => {
-                const query = addressInput.value;
-                if (query) {
-                    searchPredictions(query);
-                }
-            });
-        }
-
+        // Register input and UI handlers only after google maps has loaded
         loadGoogleMapsScript(() => {
             initializeMap();
             updateAddressPreview(addressInput.value);
+
+            // Attach handlers now that google.maps is available
+            addressInput.addEventListener('input', (event) => {
+                debounceSearch(event.target.value);
+            });
+
+            addressInput.addEventListener('focus', () => {
+                if (autocompleteDropdown.children.length) {
+                    autocompleteDropdown.classList.add('active');
+                }
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!autocompleteDropdown.contains(event.target) && event.target !== addressInput) {
+                    autocompleteDropdown.classList.remove('active');
+                }
+            });
+
+            if (searchButton) {
+                searchButton.addEventListener('click', () => {
+                    const query = addressInput.value;
+                    if (query) {
+                        searchPredictions(query);
+                    }
+                });
+            }
         });
     </script>
 @endif

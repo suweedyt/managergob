@@ -13,7 +13,8 @@
         <div class="row">
             @forelse($tramites as $tramite)
                 <div class="col-lg-3 col-md-4 col-sm-6">
-                    <a href="{{ url('/tramites/' . $tramite->id) }}" class="service-item d-block text-decoration-none text-reset">
+                        @php $tramiteUrl = $tramite->mode === 'link' && $tramite->redirect_url ? $tramite->redirect_url : url('/tramites/' . $tramite->id); @endphp
+                            <a href="{{ $tramiteUrl }}" class="service-item d-block text-decoration-none text-reset" @if($tramite->mode === 'link' && $tramite->redirect_url) target="_blank" rel="noopener noreferrer" @endif>
                         @if($tramite->logo_image)
                             <img src="{{ asset($tramite->logo_image) }}" alt="{{ $tramite->title_short }}" style="width:48px; height:48px; object-fit:contain; display:block; margin:0 auto 8px;">
                         @elseif($tramite->logo_class)

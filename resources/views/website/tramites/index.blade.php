@@ -18,14 +18,23 @@
                     <div class="card">
                         <div class="card-header" id="heading-{{ $tramite->id }}">
                             <h2 class="mb-0">
-                                <button class="btn btn-link d-flex align-items-center" type="button" data-toggle="collapse" data-target="#collapse-{{ $tramite->id }}" aria-expanded="false" aria-controls="collapse-{{ $tramite->id }}">
+                                    @if($tramite->mode === 'link' && $tramite->redirect_url)
+                                        {{-- Open external link (or PDF) in a new tab instead of an internal viewer --}}
+                                        <a class="btn btn-link d-flex align-items-center" href="{{ $tramite->redirect_url }}" target="_blank" rel="noopener noreferrer">
+                                    @else
+                                        <button class="btn btn-link d-flex align-items-center" type="button" data-toggle="collapse" data-target="#collapse-{{ $tramite->id }}" aria-expanded="false" aria-controls="collapse-{{ $tramite->id }}">
+                                    @endif
                                     @if($tramite->logo_image)
                                         <img src="{{ asset($tramite->logo_image) }}" alt="logo" style="max-width:40px; margin-right:10px;">
                                     @elseif($tramite->logo_class)
                                         <i class="{{ $tramite->logo_class }}" style="font-size:20px; margin-right:10px;"></i>
                                     @endif
                                     <strong>{{ $tramite->title_short }}</strong>
-                                </button>
+                                    @if($tramite->mode === 'link' && $tramite->redirect_url)
+                                        </a>
+                                    @else
+                                        </button>
+                                    @endif
                             </h2>
                         </div>
 

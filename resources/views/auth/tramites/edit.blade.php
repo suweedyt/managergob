@@ -74,8 +74,46 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="content">Contenido</label>
-                                <textarea name="content" id="content" class="form-control summernote">{{ old('content', $tramite->content) }}</textarea>
+                                {{-- El modo se determina mediante el acordeón: abre "Contenido" o "Redirección" --}}
+                                <input type="hidden" name="mode" id="mode" value="{{ $isLink ? 'link' : 'content' }}">
+                                <p class="small text-muted mb-0">Selecciona la sección del acordeón para indicar si este trámite tendrá <strong>Contenido</strong> o una <strong>Redirección / Link</strong>.</p>
+                            </div>
+
+                            @php $isLink = old('mode', $tramite->mode) === 'link'; @endphp
+                            <div class="accordion" id="tramiteModeAccordion">
+                                <div class="accordion-item mb-3">
+                                    <h2 class="accordion-header" id="tramiteContentHeading">
+                                        <button class="accordion-button {{ $isLink ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#tramiteContent" aria-expanded="{{ $isLink ? 'false' : 'true' }}" aria-controls="tramiteContent">
+                                            Contenido
+                                        </button>
+                                    </h2>
+                                    <div id="tramiteContent" class="accordion-collapse collapse {{ $isLink ? '' : 'show' }}" aria-labelledby="tramiteContentHeading" data-bs-parent="#tramiteModeAccordion">
+                                        <div class="accordion-body p-0">
+                                            <div class="form-group" id="contentGroup">
+                                                <label for="content">Contenido</label>
+                                                <textarea name="content" id="content" class="form-control summernote">{{ old('content', $tramite->content) }}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item mb-3">
+                                    <h2 class="accordion-header" id="tramiteLinkHeading">
+                                        <button class="accordion-button {{ $isLink ? '' : 'collapsed' }}" type="button" data-bs-toggle="collapse" data-bs-target="#tramiteLink" aria-expanded="{{ $isLink ? 'true' : 'false' }}" aria-controls="tramiteLink">
+                                            Redirección / Link
+                                        </button>
+                                    </h2>
+                                    <div id="tramiteLink" class="accordion-collapse collapse {{ $isLink ? 'show' : '' }}" aria-labelledby="tramiteLinkHeading" data-bs-parent="#tramiteModeAccordion">
+                                        <div class="accordion-body p-0">
+                                            <div class="form-group" id="redirectGroup">
+                                                <label for="redirect_url">URL de redirección</label>
+                                                <input type="url" name="redirect_url" id="redirect_url" class="form-control" value="{{ old('redirect_url', $tramite->redirect_url) }}" placeholder="https://example.com/documento.pdf">
+                                                <small class="form-text text-muted">Si la URL termina en .pdf se mostrará embebida; si es una URL normal se intentará cargar dentro de la página.</small>
+                                                @error('redirect_url') <div class="text-danger small">{{ $message }}</div> @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="form-group form-check form-switch">
@@ -131,6 +169,47 @@
                 $iconInput.val('');
                 $iconPicker.find('.icon-item').removeClass('active border-primary');
             });
+
+            // Toggle between content and link mode (edit) and sync accordion
+            function toggleMode() {
+                var mode = $('#mode').val();
+
+                if (mode === 'link') {
+                    $('#tramiteLink').addClass('show');
+                    $('#tramiteContent').removeClass('show');
+
+                    $('[data-bs-target="#tramiteLink"]').removeClass('collapsed').attr('aria-expanded', 'true');
+                    $('[data-bs-target="#tramiteContent"]').addClass('collapsed').attr('aria-expanded', 'false');
+
+                    $('#redirectGroup').show();
+                    $('#contentGroup').hide();
+                } else {
+                    $('#tramiteContent').addClass('show');
+                    $('#tramiteLink').removeClass('show');
+
+                    $('[data-bs-target="#tramiteContent"]').removeClass('collapsed').attr('aria-expanded', 'true');
+                    $('[data-bs-target="#tramiteLink"]').addClass('collapsed').attr('aria-expanded', 'false');
+
+                    $('#redirectGroup').hide();
+                    $('#contentGroup').show();
+                }
+            }
+
+            // Use accordion collapse events to decide which mode will be saved
+            $('#tramiteLink').on('shown.bs.collapse', function () {
+                $('#mode').val('link');
+                toggleMode();
+            });
+            $('#tramiteContent').on('shown.bs.collapse', function () {
+                $('#mode').val('content');
+                toggleMode();
+            });
+
+            // Initialize the hidden mode field and UI on load
+            if (!$('#mode').val()) {
+                $('#mode').val($('#tramiteLink').hasClass('show') ? 'link' : 'content');
+            }
+            toggleMode();
         });
     </script>
 @endsection
