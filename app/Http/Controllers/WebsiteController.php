@@ -61,7 +61,7 @@ class WebsiteController extends Controller
     {
         if ($tramite->mode !== 'link' || empty($tramite->redirect_url)) {
             // Not configured as link — redirect to the tramite public view
-            return to_route('tramites.show', ['tramite' => $tramite->id]);
+            return to_route('website.tramites.show', ['tramite' => $tramite->id]);
         }
 
         // Pass the redirect URL to a dedicated view which will embed or load it

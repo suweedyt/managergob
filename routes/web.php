@@ -21,7 +21,7 @@ Route::controller(WebsiteController::class)->group(function () {
     Route::get('/news/single/{new}',  'show')->name('news.single');
     Route::get('/tramites', 'tramites')->name('tramites');
     Route::get('/tramites/{tramite}/link', 'tramiteLink')->name('tramites.link');
-    Route::get('/tramites/{tramite}', 'tramiteShow')->name('tramites.show');
+    Route::get('/tramites/{tramite}', 'tramiteShow')->name('website.tramites.show');
     Route::get('/contact', 'contact')->name('contact');
 });
 
