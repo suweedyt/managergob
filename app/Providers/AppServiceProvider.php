@@ -7,6 +7,7 @@ use App\Models\FeatureSetting;
 use App\Models\SiteSetting;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated as AuthRedirectMiddleware;
 use Illuminate\Support\ServiceProvider;
 
@@ -19,6 +20,11 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Force https scheme for URL generation when in production or when explicitly required.
+        if ($this->app->environment('production') || env('FORCE_HTTPS', false)) {
+            URL::forceScheme('https');
+        }
+
         View::composer('layouts.website', function ($view) {
             $settings = SiteSetting::query()->first();
 
