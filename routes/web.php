@@ -11,6 +11,8 @@ use App\Http\Controllers\Auth\TramiteController;
 use App\Http\Controllers\Auth\TramiteSettingController;
 use App\Http\Controllers\Auth\LocationController;
 use App\Http\Controllers\Auth\ContactSettingController;
+use App\Http\Controllers\Auth\SectionController;
+use App\Http\Controllers\Auth\SectionSettingController;
 use App\Http\Controllers\WebsiteController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +26,7 @@ Route::controller(WebsiteController::class)->group(function () {
     Route::get('/tramites/{tramite}/link', 'tramiteLink')->name('tramites.link');
     Route::get('/tramites/{tramite}', 'tramiteShow')->name('website.tramites.show');
     Route::get('/contact', 'contact')->name('contact');
+    Route::get('/sections', 'sections')->name('sections');
 });
 
 Auth::routes();
@@ -35,6 +38,8 @@ Route::prefix('auth')->middleware(['auth'])->group(function () {
     Route::resource('categories', CategoryController::class)->except(['show']);
     Route::resource('tramites', TramiteController::class);
     Route::resource('locations', LocationController::class);
+    Route::resource('sections', SectionController::class);
+    Route::resource('sectionssettings', SectionSettingController::class)->only(['index', 'store']);
     // Preview route for banners (opens standalone preview page) - must be before resource routes
     Route::get('banners/preview', [\App\Http\Controllers\Auth\BannerPreviewController::class, 'show'])->name('banners.preview');
     Route::resource('banners', BannerController::class);

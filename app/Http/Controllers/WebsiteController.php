@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Banner;
 use App\Models\FeatureSetting;
 use App\Models\Post;
+use App\Models\Section;
+use App\Models\SectionSetting;
 use App\Models\Tramite;
 use App\Models\TramiteSetting;
 use App\Models\Location;
@@ -14,20 +16,10 @@ class WebsiteController extends Controller
 {
     public function home()
     {
-        $newsBanners = Post::where('is_published', Post::Published)
-            ->where('is_slider', true)
-            ->orderBy('id', 'desc')
-            ->take(5)
-            ->get();
+        $sectionsSettings = SectionSetting::first();
 
-        $customBanners = Banner::where('is_published', true)
-            ->orderByDesc('id')
-            ->take(5)
-            ->get();
+        $sections = $this->generateSections();
 
-        $bannerSliders = $customBanners->concat($newsBanners)->values();
-
-        // traer algunos trámites publicados para mostrar en la home
         $tramites = Tramite::where('is_published', true)
             ->orderBy('id', 'asc')
             ->take(8)
@@ -35,7 +27,49 @@ class WebsiteController extends Controller
 
         $tramiteSettings = TramiteSetting::first();
         $featureSetting = FeatureSetting::first();
-        return view('website.index', ['bannerSliders' => $bannerSliders, 'tramites' => $tramites, 'tramiteSettings' => $tramiteSettings, 'featureSetting' => $featureSetting]);
+
+        return view('website.index', [
+            'sectionsHome' => $sections,
+            'sectionsSettings' => $sectionsSettings,
+            'tramites' => $tramites,
+            'tramiteSettings' => $tramiteSettings,
+            'featureSetting' => $featureSetting,
+            'bannerSliders' => $this->getBannerSliders(),
+        ]);
+    }
+
+    protected function generateSections()
+    {
+        $sections = collect();
+        $tramiteSettings = TramiteSetting::first();
+        $tramiteTitle = optional($tramiteSettings)->title ?? 'Trámites y Servicios';
+        $tramiteLogoImage = optional($tramiteSettings)->logo_image ?? null;
+        $tramiteLogoClass = optional($tramiteSettings)->logo_class ?? 'mdi mdi-file-document-box';
+        $tramitesCount = Tramite::where('is_published', true)->count();
+        $sections = Section::where('is_published', true)
+            ->orderBy('order')
+            ->orderByDesc('id')
+            ->take(8)
+            ->get();
+
+        // Insert virtual "Trámites y Servicios" at top only when there are tramites
+        if ($tramitesCount > 0) {
+            $virtualTramites = (object) [
+                'id' => 'tramites-virtual',
+                'title_full' => $tramiteTitle,
+                'title_short' => null,
+                'logo_class' => $tramiteLogoClass,
+                'logo_image' => $tramiteLogoImage,
+                'description' => null,
+                'content' => null,
+                'mode' => 'link',
+                'redirect_url' => route('tramites'),
+            ];
+
+            $sections = $sections->prepend($virtualTramites);
+        }
+
+        return $sections;
     }
 
     public function news()
@@ -95,5 +129,28 @@ class WebsiteController extends Controller
         $contactSettings = ContactSetting::first();
 
         return view('website.locations.contact', ['locations' => $locations, 'contactSettings' => $contactSettings]);
+    }
+
+    private function getBannerSliders()
+    {
+        $newsBanners = Post::where('is_published', Post::Published)
+            ->where('is_slider', true)
+            ->orderBy('id', 'desc')
+            ->take(5)
+            ->get();
+
+        $customBanners = Banner::where('is_published', true)
+            ->orderByDesc('id')
+            ->take(5)
+            ->get();
+
+        return $customBanners->concat($newsBanners)->values();
+    }
+
+    public function sections()
+    {
+        $sections = $this->generateSections();
+        $collapse = request()->query('collapse');
+        return view('website.sections.index', ['sections' => $sections, 'collapse' => $collapse]);
     }
 }

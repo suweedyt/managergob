@@ -33,7 +33,7 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('tramitessettings.store') }}">
+                    <form method="POST" action="{{ route('tramitessettings.store') }}" enctype="multipart/form-data">
                         @csrf
 
                         <div class="accordion" id="tramitesSettingsAccordion">
@@ -56,6 +56,36 @@
                                                 <label for="subtitle" class="form-label">Subtítulo</label>
                                                 <input id="subtitle" name="subtitle" type="text" class="form-control" value="{{ old('subtitle', optional($tramitessettings)->subtitle) }}">
                                                 @error('subtitle') <div class="text-danger small">{{ $message }}</div> @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item mb-3">
+                                <h2 class="accordion-header" id="tramitesLogoHeading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#tramitesLogo" aria-expanded="false" aria-controls="tramitesLogo">
+                                        Logo
+                                    </button>
+                                </h2>
+                                <div id="tramitesLogo" class="accordion-collapse collapse" aria-labelledby="tramitesLogoHeading" data-bs-parent="#tramitesSettingsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row g-3 align-items-center">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Logo actual</label>
+                                                <div>
+                                                    @if(optional($tramitessettings)->logo_image)
+                                                        <img src="{{ asset(optional($tramitessettings)->logo_image) }}" alt="Logo trámites" class="img-fluid" style="max-height:80px; object-fit:contain;">
+                                                    @else
+                                                        <div class="text-muted small">No se ha configurado logo.</div>
+                                                    @endif
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-8">
+                                                <label for="logo_image" class="form-label">Subir nuevo logo</label>
+                                                <input id="logo_image" name="logo_image" type="file" accept="image/*" class="form-control">
+                                                @error('logo_image') <div class="text-danger small">{{ $message }}</div> @enderror
+                                                <div class="form-text">Formatos permitidos: jpg, jpeg, png, webp. Máx 5MB.</div>
                                             </div>
                                         </div>
                                     </div>

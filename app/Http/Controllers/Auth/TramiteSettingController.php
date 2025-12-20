@@ -19,7 +19,20 @@ class TramiteSettingController extends Controller
         $data = $request->validate([
             'title' => ['nullable', 'string', 'max:255'],
             'subtitle' => ['nullable', 'string', 'max:512'],
+            'logo_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'], // max 5MB
         ]);
+
+        // handle logo upload
+        if ($request->hasFile('logo_image')) {
+            $file = $request->file('logo_image');
+            $filename = time() . '_tramites_logo.' . $file->getClientOriginalExtension();
+            $destination = public_path('images/tramites');
+            if (!is_dir($destination)) {
+                mkdir($destination, 0755, true);
+            }
+            $file->move($destination, $filename);
+            $data['logo_image'] = 'images/tramites/' . $filename;
+        }
 
         $settings = TramiteSetting::first();
         if ($settings) {

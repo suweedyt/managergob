@@ -122,6 +122,27 @@
                         </li>
 
                         @php
+                            $isSections = request()->routeIs('sections.*') || request()->routeIs('sectionssettings.*');
+                        @endphp
+                        <li class="nav-item">
+                            <a class="nav-link {{ $isSections ? '' : 'collapsed' }}" data-bs-toggle="collapse" href="#sections-config" aria-expanded="{{ $isSections ? 'true' : 'false' }}" aria-controls="sections-config">
+                                <span class="menu-title">Secciones</span>
+                                <i class="menu-arrow"></i>
+                                <i class="mdi mdi-view-list menu-icon"></i>
+                            </a>
+                            <div class="collapse {{ $isSections ? 'show' : '' }}" id="sections-config">
+                                <ul class="nav flex-column sub-menu">
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('sections.*') ? 'active' : '' }}" href="{{ route('sections.index') }}">Secciones</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('sectionssettings.*') ? 'active' : '' }}" href="{{ route('sectionssettings.index') }}">Configuraciones</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        @php
                             $isTramites = request()->routeIs('tramites.*') || request()->routeIs('tramitessettings.*');
                         @endphp
                         <li class="nav-item">

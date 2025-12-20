@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TramiteSetting extends Model
+class SectionSetting extends Model
 {
-    protected $table = 'tramite_settings';
+    use HasFactory;
 
     protected $fillable = [
         'title',
         'subtitle',
-        'logo_image',
     ];
 }

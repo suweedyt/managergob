@@ -29,3 +29,5 @@ yarn-error.log
 !/public/images/tramites/.gitkeep
 /public/images/banners/*
 !/public/images/banners/.gitkeep
+/public/images/sections/*
+!/public/images/sections/.gitkeep

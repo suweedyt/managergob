@@ -9,7 +9,10 @@
         <x-slider_banners :bannerSliders="$bannerSliders" />
     @endif
 
-    @include('website.partials.tramites_home', ['tramites' => $tramites ?? collect(), 'tramiteSettings' => $tramiteSettings ?? null])
+    @include('website.partials.tramites_home', [
+        'sections' => $sectionsHome ?? collect(),
+        'sectionsSettings' => $sectionsSettings ?? null,
+    ])
 
     <x-feature-section :featureSetting="$featureSetting ?? null" />
 
