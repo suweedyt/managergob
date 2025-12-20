@@ -120,6 +120,7 @@
                                                 <div class="input-group col-xs-12">
                                                     <input type="file" name="file" id="main_file" class="form-control file-upload-info" placeholder="Cargar Imagen Principal" accept="image/*" required>
                                                 </div>
+                                                <div id="main_image_preview" class="mt-2"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -357,6 +358,21 @@
                 reader.readAsDataURL(file);
             });
 
+            // main image thumbnail preview (create)
+            function setMainPreview(url) {
+                var $target = $('#main_image_preview');
+                if (!url) { $target.html(''); return; }
+                $target.html('<img src="' + url + '" alt="preview" style="max-width:200px;" />');
+            }
+
+            $mainFile.on('change', function (event) {
+                var file = event.target.files[0];
+                if (!file) { setMainPreview(''); return; }
+                var reader = new FileReader();
+                reader.onload = function (e) { setMainPreview(e.target.result); };
+                reader.readAsDataURL(file);
+            });
+
             function pointerToPosition(event) {
                 if (!$preview.hasClass('has-image')) {
                     return;
@@ -408,67 +424,6 @@
 
             if (!$sliderCheckbox.is(':checked')) {
                 $bannerShortDescriptionGroup.hide();
-            }
-        });
-    </script>
-@endsection
-                reader.onload = function (e) {
-                    // only set as banner preview when banner is enabled and not using different
-                    if ($sliderCheckbox.is(':checked') && !$bannerDifferent.is(':checked')) {
-                        setPreview(e.target.result, 50, 50);
-                    }
-                };
-                reader.readAsDataURL(file);
-            });
-
-            function pointerToPosition(event) {
-                if (!$preview.hasClass('has-image')) {
-                    return;
-                }
-
-                var original = event.originalEvent || event;
-                var rect = $preview[0].getBoundingClientRect();
-                var xPercent = ((original.clientX - rect.left) / rect.width) * 100;
-                var yPercent = ((original.clientY - rect.top) / rect.height) * 100;
-
-                updatePosition(xPercent, yPercent);
-            }
-
-            $preview.on('pointerdown', function (event) {
-                if (!$preview.hasClass('has-image')) {
-                    return;
-                }
-
-                dragging = true;
-                activePointerId = event.originalEvent.pointerId;
-                $preview.addClass('is-dragging');
-                pointerToPosition(event);
-                event.preventDefault();
-            });
-
-            $(document).on('pointermove', function (event) {
-                if (!dragging || event.originalEvent.pointerId !== activePointerId) {
-                    return;
-                }
-
-                pointerToPosition(event);
-            });
-
-            $(document).on('pointerup pointercancel', function (event) {
-                if (!dragging || event.originalEvent.pointerId !== activePointerId) {
-                    return;
-                }
-
-                dragging = false;
-                activePointerId = null;
-                $preview.removeClass('is-dragging').addClass('no-helper');
-            });
-
-            toggleSlider();
-
-            // ensure banner-file input visibility on load if user had it checked
-            if ($bannerDifferent.is(':checked')) {
-                $bannerFileInputWrapper.show();
             }
         });
     </script>

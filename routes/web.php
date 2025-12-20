@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AdminSettingController;
+use App\Http\Controllers\Auth\BannerController;
 use App\Http\Controllers\Auth\DashboardController;
 use App\Http\Controllers\Auth\CategoryController;
 use App\Http\Controllers\Auth\FeatureSettingController;
@@ -34,6 +35,9 @@ Route::prefix('auth')->middleware(['auth'])->group(function () {
     Route::resource('categories', CategoryController::class)->except(['show']);
     Route::resource('tramites', TramiteController::class);
     Route::resource('locations', LocationController::class);
+    // Preview route for banners (opens standalone preview page) - must be before resource routes
+    Route::get('banners/preview', [\App\Http\Controllers\Auth\BannerPreviewController::class, 'show'])->name('banners.preview');
+    Route::resource('banners', BannerController::class);
 
     Route::resource('tramitessettings', TramiteSettingController::class);
     Route::resource('contactsettings', ContactSettingController::class)->only(['index', 'store']);

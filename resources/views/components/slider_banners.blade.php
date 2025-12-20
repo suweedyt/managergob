@@ -7,33 +7,77 @@
     <section class="slider">
         <div id="newsCarousel" class="carousel slide" data-ride="carousel">
             <div class="carousel-inner">
-                @foreach($bannerSliders as $index => $post)
+                @foreach($bannerSliders as $index => $item)
                     @php
-                        $image = null;
-                        if (optional($post->sliderGallery)->image) {
-                            $image = asset($post->sliderGallery->image);
-                        } elseif (optional($post->gallery)->image) {
-                            $image = asset($post->gallery->image);
+                        $isPost = $item instanceof \App\Models\Post;
+                        $title = $isPost ? $item->title : $item->title;
+                        $buttonText = $isPost ? 'Leer más' : ($item->button_text ?: 'Ver más');
+                        $buttonUrl = $isPost ? route('news.single', $item->id) : ($item->button_url ?: '#');
+                        $buttonBg = $isPost ? '#0d6efd' : ($item->button_bg_color ?: '#0d6efd');
+
+                        if ($isPost) {
+                            if (optional($item->sliderGallery)->image) {
+                                $image = asset($item->sliderGallery->image);
+                            } elseif (optional($item->gallery)->image) {
+                                $image = asset($item->gallery->image);
+                            } else {
+                                $image = asset('assets/website/images/nosotrosGobierno.jpg');
+                            }
+
+                            $positionX = is_numeric($item->slider_position_x) ? max(0, min(100, (int) $item->slider_position_x)) : 50;
+                            $positionY = is_numeric($item->slider_position_y) ? max(0, min(100, (int) $item->slider_position_y)) : 50;
+                            $bannerDescription = $item->banner_short_description ? $item->banner_short_description : limitHtml($item->description, 150, '...');
+                            $isVideo = false;
                         } else {
-                            $image = asset('assets/website/images/nosotrosGobierno.jpg');
+                            $isVideo = $item->media_type === 'video';
+                            $image = asset(ltrim($item->media_path, '/'));
+                            $positionX = is_numeric($item->position_x) ? max(0, min(100, (int) $item->position_x)) : 50;
+                            $positionY = is_numeric($item->position_y) ? max(0, min(100, (int) $item->position_y)) : 50;
+                            $bannerDescription = $item->short_description ?: limitHtml($item->long_description, 150, '...');
                         }
-
-                        // Ensure slider positions are numeric and within 0-100, default to center (50%)
-                        $positionX = is_numeric($post->slider_position_x) ? max(0, min(100, (int) $post->slider_position_x)) : 50;
-                        $positionY = is_numeric($post->slider_position_y) ? max(0, min(100, (int) $post->slider_position_y)) : 50;
-
-                        $bannerDescription = $post->banner_short_description
-                            ? $post->banner_short_description
-                            : limitHtml($post->description, 150, '...');
                     @endphp
 
                     <div class="carousel-item @if($index == 0) active @endif">
-                        <div class="d-block w-100 carousel-slide" style="background-image: url('{{ $image }}'); background-size: cover; background-position: {{ $positionX }}% {{ $positionY }}%; height: 520px;">
-                            <div class="carousel-caption d-none d-md-block text-start" style="background: rgba(0,0,0,0.4); padding: 20px;">
-                                <h3>{{ $post->title }}</h3>
-                                <p class="shortDescription-banner">{!! $bannerDescription !!}</p>
-                                <a href="{{ route('news.single', $post->id) }}" class="btn btn-primary">Leer más</a>
+                        @if($isVideo)
+                            @php
+                                $mediaRaw = $item->media_path;
+                                $isExternal = \Illuminate\Support\Str::startsWith($mediaRaw, ['http://','https://']);
+                                $isYouTube = $isExternal && preg_match('/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_\-]{11})/', $mediaRaw, $m) ? ($m[1] ?? null) : null;
+                                $mediaSrc = $isExternal ? $mediaRaw : asset(ltrim($mediaRaw, '/'));
+                            @endphp
+
+                            <div class="d-block w-100 carousel-slide" style="height: 520px; background: #000; display:flex; align-items:center; justify-content:center;">
+                                    @if($isYouTube)
+                                    @php $ytId = $isYouTube; @endphp
+                                    <iframe class="w-100 h-100" src="https://www.youtube.com/embed/{{ $ytId }}?autoplay=1&mute=1&loop=1&playlist={{ $ytId }}&playsinline=1" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen style="border:0; pointer-events: none;" ></iframe>
+                                @else
+                                    <video id="slider-video-{{ $index }}" src="{{ $mediaSrc }}" class="w-100 h-100 slider-video" style="object-fit: cover; object-position: {{ $positionX }}% {{ $positionY }}%; pointer-events: none;" playsinline muted loop preload="metadata"></video>
+                                @endif
                             </div>
+                        @else
+                            <div class="d-block w-100 carousel-slide" style="background-image: url('{{ $image }}'); background-size: cover; background-position: {{ $positionX }}% {{ $positionY }}%; height: 520px;">
+                            </div>
+                        @endif
+                        <div class="carousel-caption d-none d-md-block text-start" style="background: rgba(0,0,0,0.4); padding: 20px;">
+                            <h3>{{ $title }}</h3>
+                            <p class="shortDescription-banner">{!! $bannerDescription !!}</p>
+                            @if($buttonUrl)
+                                @if($isVideo)
+                                    @if(!$isExternal && !$isYouTube)
+                                        {{-- Local uploaded video: show admin link button + separate play/pause button --}}
+                                        <a href="{{ $buttonUrl }}" class="btn btn-primary btn-config" style="background-color: {{ $buttonBg }}; border-color: {{ $buttonBg }};" target="{{ $isPost ? '_self' : '_blank' }}">{{ $buttonText }}</a>
+                                        <button type="button" class="btn btn-secondary btn-video-action" data-video-local="true" style="margin-left:8px;">Reproducir</button>
+                                    @elseif($isYouTube)
+                                        {{-- YouTube iframe: only show admin configured button --}}
+                                        <a href="{{ $buttonUrl }}" class="btn btn-primary" style="background-color: {{ $buttonBg }}; border-color: {{ $buttonBg }};" target="{{ $isPost ? '_self' : '_blank' }}">{{ $buttonText }}</a>
+                                    @else
+                                        {{-- External video URL (non-YouTube): show only admin link button --}}
+                                        <a href="{{ $buttonUrl }}" class="btn btn-primary" style="background-color: {{ $buttonBg }}; border-color: {{ $buttonBg }};" target="{{ $isPost ? '_self' : '_blank' }}">{{ $buttonText }}</a>
+                                    @endif
+                                @else
+                                    <a href="{{ $buttonUrl }}" class="btn btn-primary" style="background-color: {{ $buttonBg }}; border-color: {{ $buttonBg }};" target="{{ $isPost ? '_self' : '_blank' }}">{{ $buttonText }}</a>
+                                @endif
+                            @endif
                         </div>
                     </div>
                 @endforeach
@@ -57,6 +101,50 @@
             if ($carousel.length && typeof $carousel.carousel === 'function') {
                 // initialize with sensible defaults (5s interval)
                 $carousel.carousel({ interval: 5000, pause: 'hover' });
+                // Pause all videos initially except active
+                function pauseAll() {
+                    $carousel.find('video').each(function() { try{ this.pause(); }catch(e){} });
+                }
+
+                function playActive() {
+                    var $active = $carousel.find('.carousel-item.active');
+                    var vid = $active.find('video').get(0);
+                    if(vid){ try{ vid.currentTime = 0; vid.muted = true; vid.play().catch(()=>{}); }catch(e){} }
+                }
+
+                // on slide event, pause others and play active after transition
+                $carousel.on('slide.bs.carousel', function () {
+                    pauseAll();
+                });
+
+                $carousel.on('slid.bs.carousel', function () {
+                    playActive();
+                });
+
+                // button on active slide: toggle play/pause for local videos
+                $(document).on('click', '.btn-video-action', function(e){
+                    var $btn = $(this);
+                    var $active = $carousel.find('.carousel-item.active');
+                    var vid = $active.find('video').get(0);
+
+                    // If button is intended to control a local video and a video element exists
+                    if(vid && $btn.data('video-local')){
+                        e.preventDefault();
+                        try{
+                            if(vid.paused){ vid.play(); $btn.addClass('playing').text('Pausar'); }
+                            else { vid.pause(); $btn.removeClass('playing').text('Reproducir'); }
+                        }catch(err){
+                            // fallback: do nothing or optionally navigate
+                        }
+                        return;
+                    }
+
+                    // Otherwise, let link buttons behave normally (navigation)
+                });
+
+                // initial state
+                pauseAll();
+                playActive();
             }
         });
     </script>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banner;
 use App\Models\FeatureSetting;
 use App\Models\Post;
 use App\Models\Tramite;
@@ -13,11 +14,18 @@ class WebsiteController extends Controller
 {
     public function home()
     {
-        $bannerSliders = Post::where('is_published', Post::Published)
+        $newsBanners = Post::where('is_published', Post::Published)
             ->where('is_slider', true)
             ->orderBy('id', 'desc')
             ->take(5)
             ->get();
+
+        $customBanners = Banner::where('is_published', true)
+            ->orderByDesc('id')
+            ->take(5)
+            ->get();
+
+        $bannerSliders = $customBanners->concat($newsBanners)->values();
 
         // traer algunos trámites publicados para mostrar en la home
         $tramites = Tramite::where('is_published', true)

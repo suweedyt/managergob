@@ -120,11 +120,11 @@
                                                 <div class="input-group col-xs-12">
                                                     <input type="file" name="file" id="main_file" class="form-control file-upload-info" placeholder="Cargar Imagen Principal" accept="image/*">
                                                 </div>
-                                                @if($post->gallery)
-                                                    <div class="mt-2">
+                                                <div id="main_image_preview" class="mt-2">
+                                                    @if($post->gallery)
                                                         <img src="{{ asset($post->gallery->image) }}" alt="principal" style="max-width:200px;">
-                                                    </div>
-                                                @endif
+                                                    @endif
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -360,6 +360,23 @@
                     if ($sliderCheckbox.is(':checked') && !$bannerDifferent.is(':checked')) {
                         setPreview(e.target.result, 50, 50);
                     }
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // main image thumbnail preview (edit)
+            function setMainPreview(url) {
+                var $target = $('#main_image_preview');
+                if (!url) { $target.html(''); return; }
+                $target.html('<img src="' + url + '" alt="preview" style="max-width:200px;" />');
+            }
+
+            $mainFile.on('change', function (event) {
+                var file = event.target.files[0];
+                if (!file) { return; }
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    setMainPreview(e.target.result);
                 };
                 reader.readAsDataURL(file);
             });

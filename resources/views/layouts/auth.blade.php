@@ -89,6 +89,17 @@
                                 <i class="mdi mdi-home menu-icon"></i>
                             </a>
                         </li>
+
+                        @php
+                            $isBanners = request()->routeIs('banners.*') || request()->is('auth/banners*') || request()->routeIs('auth.banners.*');
+                        @endphp
+                        <li class="nav-item {{ $isBanners ? 'active' : '' }}">
+                            <a class="nav-link {{ $isBanners ? 'active' : '' }}" href="{{ route('banners.index') }}">
+                                <span class="menu-title">Banners</span>
+                                <i class="mdi mdi-image-area menu-icon"></i>
+                            </a>
+                        </li>
+
                         @php
                             $isNoticias = request()->is('auth/posts*') || request()->is('auth/categories*') || request()->routeIs('posts.*') || request()->routeIs('categories.*');
                         @endphp
