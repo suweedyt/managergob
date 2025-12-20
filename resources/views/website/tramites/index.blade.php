@@ -12,7 +12,7 @@
                     <p class="lead">{{ $tramiteSettings->subtitle }}</p>
                 @endif
             </div>
-            
+
             <div class="accordion" id="tramitesAccordion">
                 @forelse($tramites as $tramite)
                     <div class="card">
@@ -29,7 +29,7 @@
                                     @elseif($tramite->logo_class)
                                         <i class="{{ $tramite->logo_class }}" style="font-size:20px; margin-right:10px;"></i>
                                     @endif
-                                    <strong>{{ $tramite->title_short }}</strong>
+                                    <strong>{{ $tramite->title_full }}</strong>
                                     @if($tramite->mode === 'link' && $tramite->redirect_url)
                                         </a>
                                     @else
