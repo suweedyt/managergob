@@ -109,9 +109,17 @@
     <section class="related-projects section-sm bg-gray">
         <div class="container">
             <div class="row">
-                <div class="col-12">
+                <div class="col-12 mb-3">
+                    @php
+                        $ns = \App\Models\NewsSliderSetting::first();
+                        $sliderTitle = $ns->title ?? 'Noticias y Actividades para ti';
+                        $sliderSubtitle = $ns->subtitle ?? null;
+                    @endphp
                     <div class="text-center">
-                        <h2>Noticias y Actividades para ti</h2>
+                        <h2>{{ $sliderTitle }}</h2>
+                        @if($sliderSubtitle)
+                            <p class="lead mt-2">{{ $sliderSubtitle }}</p>
+                        @endif
                     </div>
                 </div>
             </div>

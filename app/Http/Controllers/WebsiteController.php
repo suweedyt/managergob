@@ -153,4 +153,21 @@ class WebsiteController extends Controller
         $collapse = request()->query('collapse');
         return view('website.sections.index', ['sections' => $sections, 'collapse' => $collapse]);
     }
+
+    public function featureLanding(?string $slug = null)
+    {
+        $settings = FeatureSetting::first();
+        if (!$settings || ($settings->link_type !== 'landing')) {
+            return to_route('home');
+        }
+
+        $targetSlug = $settings->slug;
+        if ($slug && $slug !== $targetSlug) {
+            return to_route('feature.landing', ['slug' => $targetSlug]);
+        }
+
+        return view('website.feature-landing', [
+            'settings' => $settings,
+        ]);
+    }
 }

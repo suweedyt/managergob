@@ -91,6 +91,10 @@ class PostController extends Controller
                 } else {
                     $sliderGalleryId = $gallery?->id;
                 }
+            } elseif ($request->boolean('is_news_slider')) {
+                // Si la noticia está marcada solo como noticia para el slider del home (is_news_slider)
+                // pero no como banner, usar la galería principal como imagen del slider.
+                $sliderGalleryId = $gallery?->id;
             }
 
             Post::create([
@@ -102,8 +106,9 @@ class PostController extends Controller
                 'is_slider' => $request->boolean('is_slider'),
                 'is_news_slider' => $request->boolean('is_news_slider'),
                 'slider_gallery_id' => $sliderGalleryId,
-                'slider_position_x' => $request->boolean('is_slider') ? $sliderPositionX : null,
-                'slider_position_y' => $request->boolean('is_slider') ? $sliderPositionY : null,
+                // Asegurar posiciones si la noticia será usada en un slider (banner o news slider)
+                'slider_position_x' => ($request->boolean('is_slider') || $request->boolean('is_news_slider')) ? $sliderPositionX : null,
+                'slider_position_y' => ($request->boolean('is_slider') || $request->boolean('is_news_slider')) ? $sliderPositionY : null,
                 'banner_short_description' => $bannerShortDescription,
             ]);
 
@@ -212,9 +217,17 @@ class PostController extends Controller
                 $post->slider_position_y = $request->input('slider_position_y', $post->slider_position_y ?? 50);
             } else {
                 $post->is_slider = false;
-                $post->slider_position_x = null;
-                $post->slider_position_y = null;
-                $post->slider_gallery_id = null;
+
+                if ($request->boolean('is_news_slider')) {
+                    // No es banner pero sí aparece en el slider de noticias: mantener o establecer posiciones
+                    $post->slider_position_x = $request->input('slider_position_x', $post->slider_position_x ?? 50);
+                    $post->slider_position_y = $request->input('slider_position_y', $post->slider_position_y ?? 50);
+                    $post->slider_gallery_id = $post->gallery_id ?? null;
+                } else {
+                    $post->slider_position_x = null;
+                    $post->slider_position_y = null;
+                    $post->slider_gallery_id = null;
+                }
 
                 if ($post->sliderGallery && ($post->sliderGallery->id !== ($post->gallery_id ?? null))) {
                     $oldImage = $post->sliderGallery->image;

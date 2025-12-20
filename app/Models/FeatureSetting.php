@@ -14,5 +14,10 @@ class FeatureSetting extends Model
         'button_text',
         'button_color',
         'background_image',
+        'link_type',
+        'button_url',
+        'slug',
+        'landing_content',
+        'landing_image',
     ];
 }

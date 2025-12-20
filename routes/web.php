@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\LocationController;
 use App\Http\Controllers\Auth\ContactSettingController;
 use App\Http\Controllers\Auth\SectionController;
 use App\Http\Controllers\Auth\SectionSettingController;
+use App\Http\Controllers\Auth\NewsSliderSettingController;
 use App\Http\Controllers\WebsiteController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +28,7 @@ Route::controller(WebsiteController::class)->group(function () {
     Route::get('/tramites/{tramite}', 'tramiteShow')->name('website.tramites.show');
     Route::get('/contact', 'contact')->name('contact');
     Route::get('/sections', 'sections')->name('sections');
+    Route::get('/destacado/{slug?}', 'featureLanding')->name('feature.landing');
 });
 
 Auth::routes();
@@ -48,6 +50,7 @@ Route::prefix('auth')->middleware(['auth'])->group(function () {
     Route::resource('contactsettings', ContactSettingController::class)->only(['index', 'store']);
     Route::resource('featuresettings', FeatureSettingController::class)->only(['index', 'store']);
     Route::resource('admin-settings', AdminSettingController::class)->only(['index', 'store']);
+    Route::resource('newsslider', NewsSliderSettingController::class)->only(['index', 'store']);
 
     Route::get('posts/{post}/preview', [PostController::class, 'preview'])->name('posts.preview');
     Route::resource('site-settings', SiteSettingController::class)->only(['index', 'store']);
