@@ -25,15 +25,21 @@ class SiteSettingRequest extends FormRequest
             'footer_socials.*.url' => ['required_with:footer_socials', 'url'],
             'footer_socials.*.icon_url' => ['required_with:footer_socials', 'url'],
             'footer_copy' => ['nullable', 'string', 'max:255'],
+            'footer_logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,svg', 'max:2048'],
+            'footer_map_iframe' => ['nullable', 'string'],
+            'footer_links' => ['nullable', 'array'],
+            'footer_links.*.name' => ['required_with:footer_links', 'string', 'max:100'],
+            'footer_links.*.url' => ['required_with:footer_links', 'url'],
         ];
     }
 
     protected function prepareForValidation(): void
     {
         $socials = $this->input('footer_socials', []);
+        $links = $this->input('footer_links', []);
 
         if (!is_array($socials)) {
-            return;
+            $socials = [];
         }
 
         $normalized = [];
@@ -65,8 +71,28 @@ class SiteSettingRequest extends FormRequest
             $normalized[$index] = $social;
         }
 
+        $normalizedLinks = [];
+        if (is_array($links)) {
+            foreach ($links as $i => $link) {
+                if (!is_array($link)) {
+                    $normalizedLinks[$i] = $link;
+                    continue;
+                }
+                $url = isset($link['url']) ? trim((string) $link['url']) : '';
+                if ($url !== '') {
+                    if (preg_match('#^//#', $url)) {
+                        $link['url'] = 'https:' . $url;
+                    } elseif (!preg_match('#^[a-z][a-z0-9+\-.]*://#i', $url)) {
+                        $link['url'] = 'https://' . ltrim($url, '/');
+                    }
+                }
+                $normalizedLinks[$i] = $link;
+            }
+        }
+
         $this->merge([
             'footer_socials' => $normalized,
+            'footer_links' => $normalizedLinks,
         ]);
     }
 
@@ -86,9 +112,9 @@ class SiteSettingRequest extends FormRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
-            $socials = $this->input('footer_socials', []);
-
-            foreach ($socials as $index => $social) {
+            $footerSocials = $this->input('footer_socials', []);
+            
+            foreach ($footerSocials as $index => $social) {
                 $name = trim($social['name'] ?? '');
                 $url = trim($social['url'] ?? '');
                 $iconUrl = trim($social['icon_url'] ?? '');
@@ -99,6 +125,20 @@ class SiteSettingRequest extends FormRequest
 
                 if ($name === '' || $url === '' || $iconUrl === '') {
                     $validator->errors()->add("footer_socials.$index", 'Cada red social debe incluir nombre, URL y el enlace del icono.');
+                }
+            }
+
+            $links = $this->input('footer_links', []);
+            foreach ($links as $index => $link) {
+                $name = trim($link['name'] ?? '');
+                $url = trim($link['url'] ?? '');
+
+                if ($name === '' && $url === '') {
+                    continue;
+                }
+
+                if ($name === '' || $url === '') {
+                    $validator->errors()->add("footer_links.$index", 'Cada enlace de interés debe tener nombre y URL.');
                 }
             }
         });

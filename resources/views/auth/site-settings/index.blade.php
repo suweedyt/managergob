@@ -63,7 +63,7 @@
                                                 <small class="form-text text-muted">Formato recomendado: PNG/SVG, dimensiones 220x70px, peso máx. 2MB</small>
                                                 @if (optional($settings)->header_logo)
                                                     <div class="mt-2">
-                                                        <img src="{{ asset('images/settings/' . $settings->header_logo) }}" alt="Logo actual" class="img-fluid rounded border" style="max-height: 80px;">
+                                                        <img src="{{ asset('storage/images/settings/' . $settings->header_logo) }}" alt="Logo actual" class="img-fluid rounded border" style="max-height: 80px;">
                                                     </div>
                                                 @endif
                                             </div>
@@ -89,24 +89,82 @@
                                                 <label for="footer_text_color" class="form-label">Color de texto</label>
                                                 <input type="color" name="footer_text_color" id="footer_text_color" class="form-control form-control-color" value="{{ old('footer_text_color', optional($settings)->footer_text_color ?? '#ffffff') }}" required>
                                             </div>
-                                            <div class="col-md-8">
+                                            <div class="col-md-4">
                                                 <label for="footer_copy" class="form-label">Copy del footer</label>
                                                 <input type="text" name="footer_copy" id="footer_copy" class="form-control" value="{{ old('footer_copy', optional($settings)->footer_copy) }}" placeholder="Ejemplo: © 2024 Ayuntamiento. Todos los derechos reservados.">
                                             </div>
                                         </div>
 
                                         <div class="mt-4">
-                                            <h5 class="mb-3">Columna 1: Dirección y contacto</h5>
-                                            <label for="footer_contact" class="form-label">Contenido</label>
+                                            <h5 class="mb-3">Columna 1: Logo de footer</h5>
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <input type="file" name="footer_logo" id="footer_logo" class="form-control" accept="image/png,image/jpeg,image/svg+xml">
+                                                    <small class="form-text text-muted">Formato recomendado: PNG/SVG, peso máximo 2MB</small>
+                                                </div>
+                                                @if(optional($settings)->footer_logo)
+                                                    <div class="col-md-6">
+                                                        <label class="form-label d-block">Vista previa</label>
+                                                        <img src="{{ asset('storage/images/settings/' . $settings->footer_logo) }}" alt="Logo footer" class="img-fluid rounded border" style="max-height: 80px;">
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-4">
+                                            <h5 class="mb-3">Columna 2: Dirección y contacto</h5>
                                             <textarea name="footer_contact" id="footer_contact" rows="4" class="form-control" placeholder="Dirección completa, teléfonos, email, horario, etc.">{{ old('footer_contact', optional($settings)->footer_contact) }}</textarea>
+                                        </div>
+
+                                        <div class="mt-4" style="max-width: 70%; width: 70%;">
+                                            <label class="form-label">Columna 3: Mapa del footer (buscar por dirección)</label>
+                                            <input id="footer_map_address" type="text" class="form-control" placeholder="Escribe una dirección..." value="">
+                                            <input id="footer_map_iframe" name="footer_map_iframe" type="hidden" value="{{ old('footer_map_iframe', $settings->footer_map_iframe ?? '') }}">
+                                            <div id="footer_map_preview" class="mt-2">
+                                                @if(!empty($settings->footer_map_iframe))
+                                                    <img src="{{ $settings->footer_map_iframe }}" class="img-fluid rounded" alt="Preview mapa">
+                                                @endif
+                                            </div>
+                                            <div id="footer_map_error" class="text-danger small mt-2" style="display:none;"></div>
                                         </div>
 
                                         <div class="mt-4">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <h5 class="mb-0">Columna 2: Redes sociales</h5>
+                                                <h5 class="mb-0">Columna 4: Enlaces de interés</h5>
+                                                <button type="button" class="btn btn-sm btn-outline-primary" id="addLinkButton">Agregar enlace</button>
+                                            </div>
+                                            <p class="text-muted mb-3">Agrega enlaces de interés (texto y URL).</p>
+                                            <div id="linksList" class="list-group">
+                                                @php $links = old('footer_links', optional($settings)->footer_links ?? []); @endphp
+                                                @forelse ($links as $index => $link)
+                                                    <div class="list-group-item border rounded mb-2" data-index="{{ $index }}">
+                                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                                            <strong>Enlace #{{ $loop->iteration }}</strong>
+                                                            <button type="button" class="btn btn-sm btn-link text-danger remove-link">Eliminar</button>
+                                                        </div>
+                                                        <div class="row g-3">
+                                                            <div class="col-md-6">
+                                                                <label class="form-label">Texto</label>
+                                                                <input type="text" name="footer_links[{{ $index }}][name]" class="form-control" value="{{ $link['name'] ?? '' }}" required>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label class="form-label">URL</label>
+                                                                <input type="url" name="footer_links[{{ $index }}][url]" class="form-control" value="{{ $link['url'] ?? '' }}" required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @empty
+                                                    <p class="text-muted mb-0" id="noLinksMessage">No hay enlaces configurados.</p>
+                                                @endforelse
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-4">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <h5 class="mb-0">Columna 5: Redes sociales</h5>
                                                 <button type="button" class="btn btn-sm btn-outline-primary" id="addSocialButton">Agregar red</button>
                                             </div>
-                                            <p class="text-muted mb-3">Define las redes sociales que se mostrarán en la segunda columna. Proporciona la URL del icono que se usará en el sitio.</p>
+                                            <p class="text-muted mb-3">Define las redes sociales que se mostrarán en la cuarta columna. Proporciona la URL del icono que se usará en el sitio.</p>
                                             <div id="socialList" class="list-group">
                                                 @php
                                                     $socials = old('footer_socials', optional($settings)->footer_socials ?? []);
@@ -145,6 +203,7 @@
                                                     <p class="text-muted mb-0" id="noSocialsMessage">No hay redes sociales configuradas.</p>
                                                 @endforelse
                                             </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -267,6 +326,61 @@
                 return item;
             }
 
+            function buildLinkItem(index, values = {}) {
+                const item = document.createElement('div');
+                item.className = 'list-group-item border rounded mb-2';
+                item.dataset.index = index;
+
+                const header = document.createElement('div');
+                header.className = 'd-flex justify-content-between align-items-center mb-2';
+
+                const title = document.createElement('strong');
+                title.textContent = `Enlace #${index + 1}`;
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'btn btn-sm btn-link text-danger remove-link';
+                removeBtn.textContent = 'Eliminar';
+
+                header.append(title, removeBtn);
+
+                const row = document.createElement('div');
+                row.className = 'row g-3';
+
+                const nameCol = document.createElement('div');
+                nameCol.className = 'col-md-6';
+                const nameLabel = document.createElement('label');
+                nameLabel.className = 'form-label';
+                nameLabel.textContent = 'Texto';
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.name = `footer_links[${index}][name]`;
+                nameInput.className = 'form-control';
+                nameInput.required = true;
+                nameInput.value = values.name ?? '';
+                nameCol.append(nameLabel, nameInput);
+
+                const urlCol = document.createElement('div');
+                urlCol.className = 'col-md-6';
+                const urlLabel = document.createElement('label');
+                urlLabel.className = 'form-label';
+                urlLabel.textContent = 'URL';
+                const urlInput = document.createElement('input');
+                urlInput.type = 'url';
+                urlInput.name = `footer_links[${index}][url]`;
+                urlInput.className = 'form-control';
+                urlInput.required = true;
+                urlInput.value = values.url ?? '';
+                urlCol.append(urlLabel, urlInput);
+
+                row.append(nameCol, urlCol);
+                item.append(header, row);
+
+                attachValidationHandlers([nameInput, urlInput]);
+
+                return item;
+            }
+
             function reindexItems() {
                 const items = socialList?.querySelectorAll('.list-group-item') ?? [];
                 items.forEach((item, idx) => {
@@ -339,3 +453,351 @@
         })();
     </script>
 @endsection
+
+@push('scripts')
+    {{-- Cargar Places API si existe la clave en settings de contacto --}}
+    @if(!empty(optional($contactSettings)->google_maps_api_key))
+        <script src="https://maps.googleapis.com/maps/api/js?key={{ $contactSettings->google_maps_api_key }}&libraries=places" async defer></script>
+    @endif
+
+    <script>
+        (function () {
+            const apiKey = '{{ $contactSettings->google_maps_api_key ?? '' }}';
+            const addressInput = document.getElementById('footer_map_address');
+            const iframeInput = document.getElementById('footer_map_iframe');
+            const preview = document.getElementById('footer_map_preview');
+            const errorEl = document.getElementById('footer_map_error');
+
+            function showError(msg) {
+                if (!errorEl) return;
+                errorEl.textContent = msg;
+                errorEl.style.display = 'block';
+                addressInput?.classList.add('is-invalid');
+            }
+            function clearError() {
+                if (!errorEl) return;
+                errorEl.textContent = '';
+                errorEl.style.display = 'none';
+                addressInput?.classList.remove('is-invalid');
+            }
+
+            if (!apiKey) {
+                if (addressInput) {
+                    addressInput.addEventListener('input', function () {
+                        if (this.value.trim().length === 0) {
+                            clearError();
+                        } else {
+                            showError('La clave de Google Maps no está configurada en Contact Settings. No se puede autocompletar la dirección.');
+                        }
+                    });
+                }
+                return;
+            }
+
+            function initAutocompleteIfReady() {
+                if (!addressInput) return;
+                if (window.google && google.maps && google.maps.places) {
+                    clearError();
+                    const ac = new google.maps.places.Autocomplete(addressInput, { types: ['geocode','establishment'] });
+                    ac.addListener('place_changed', () => {
+                        const place = ac.getPlace();
+                        if (!place || !place.geometry) {
+                            showError('No se obtuvo información de ubicación para la selección.');
+                            return;
+                        }
+                        clearError();
+                        const lat = place.geometry.location.lat();
+                        const lng = place.geometry.location.lng();
+                        let mapUrl = '';
+                        if (apiKey) {
+                            mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=18&size=640x360&scale=2&markers=color:red|${lat},${lng}&key=${apiKey}`;
+                        } else {
+                            mapUrl = `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lng}&zoom=18&size=640x360&markers=${lat},${lng},red-pushpin`;
+                        }
+                        iframeInput.value = mapUrl;
+                        preview.innerHTML = `<img src="${mapUrl}" class="img-fluid rounded" alt="Preview mapa">`;
+                    });
+                } else {
+                    showError('La librería de Google Maps no se pudo cargar. Verifica la clave y la conectividad.');
+                }
+            }
+
+            const readyCheck = setInterval(() => {
+                if (window.google && google.maps && google.maps.places) {
+                    clearInterval(readyCheck);
+                    initAutocompleteIfReady();
+                }
+            }, 300);
+
+            setTimeout(() => {
+                if (!(window.google && google.maps && google.maps.places)) {
+                    showError('La librería de Google Maps tardó en cargar o está bloqueada. Comprueba la API Key en Contact Settings.');
+                    clearInterval(readyCheck);
+                }
+            }, 5000);
+        })();
+    </script>
+@endpush
+
+@push('scripts')
+    <script>
+        (function () {
+            /* --- helpers --- */
+            function attachValidationHandlers(elements) {
+                elements.forEach(element => {
+                    if (!element) return;
+                    element.addEventListener('invalid', () => element.classList.add('is-invalid'));
+                    element.addEventListener('input', () => element.classList.remove('is-invalid'));
+                });
+            }
+
+            /* --- Socials --- */
+            const socialList = document.getElementById('socialList');
+            const addSocialBtn = document.getElementById('addSocialButton');
+            const noSocialsMsgId = 'noSocialsMessage';
+
+            function updateSocialEmptyMessage() {
+                if (!socialList) return;
+                const message = document.getElementById(noSocialsMsgId);
+                const hasItems = socialList.querySelector('.list-group-item');
+                if (!hasItems && !message) {
+                    const p = document.createElement('p');
+                    p.id = noSocialsMsgId;
+                    p.className = 'text-muted mb-0';
+                    p.textContent = 'No hay redes sociales configuradas.';
+                    socialList.appendChild(p);
+                } else if (hasItems && message) {
+                    message.remove();
+                }
+            }
+
+            function buildSocialItem(index, values = {}) {
+                const item = document.createElement('div');
+                item.className = 'list-group-item border rounded mb-2';
+                item.dataset.index = index;
+
+                const header = document.createElement('div');
+                header.className = 'd-flex justify-content-between align-items-center mb-2';
+
+                const title = document.createElement('strong');
+                title.textContent = `Red social #${index + 1}`;
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'btn btn-sm btn-link text-danger remove-social';
+                removeBtn.textContent = 'Eliminar';
+
+                header.append(title, removeBtn);
+
+                const row = document.createElement('div');
+                row.className = 'row g-3';
+
+                const nameCol = document.createElement('div');
+                nameCol.className = 'col-md-4';
+                const nameLabel = document.createElement('label');
+                nameLabel.className = 'form-label';
+                nameLabel.textContent = 'Nombre';
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.name = `footer_socials[${index}][name]`;
+                nameInput.className = 'form-control';
+                nameInput.required = true;
+                nameInput.value = values.name ?? '';
+                nameCol.append(nameLabel, nameInput);
+
+                const urlCol = document.createElement('div');
+                urlCol.className = 'col-md-4';
+                const urlLabel = document.createElement('label');
+                urlLabel.className = 'form-label';
+                urlLabel.textContent = 'URL';
+                const urlInput = document.createElement('input');
+                urlInput.type = 'url';
+                urlInput.name = `footer_socials[${index}][url]`;
+                urlInput.className = 'form-control';
+                urlInput.required = true;
+                urlInput.value = values.url ?? '';
+                urlCol.append(urlLabel, urlInput);
+
+                const iconCol = document.createElement('div');
+                iconCol.className = 'col-md-4';
+                const iconLabel = document.createElement('label');
+                iconLabel.className = 'form-label';
+                iconLabel.textContent = 'Icono (URL)';
+                const iconInput = document.createElement('input');
+                iconInput.type = 'url';
+                iconInput.name = `footer_socials[${index}][icon_url]`;
+                iconInput.className = 'form-control';
+                iconInput.placeholder = 'https://...';
+                iconInput.required = true;
+                iconInput.value = values.icon_url ?? '';
+                iconCol.append(iconLabel, iconInput);
+
+                row.append(nameCol, urlCol, iconCol);
+                item.append(header, row);
+
+                attachValidationHandlers([nameInput, urlInput, iconInput]);
+
+                return item;
+            }
+
+            function reindexSocials() {
+                const items = socialList?.querySelectorAll('.list-group-item') ?? [];
+                items.forEach((item, idx) => {
+                    item.dataset.index = idx;
+                    const title = item.querySelector('strong');
+                    if (title) title.textContent = `Red social #${idx + 1}`;
+                    item.querySelectorAll('[name]').forEach(field => {
+                        const name = field.getAttribute('name');
+                        if (!name) return;
+                        field.setAttribute('name', name.replace(/footer_socials\[\d+\]/, `footer_socials[${idx}]`));
+                    });
+                });
+            }
+
+            if (socialList) {
+                Array.from(socialList.querySelectorAll('.list-group-item')).forEach((item, idx) => {
+                    item.dataset.index = idx;
+                    attachValidationHandlers(Array.from(item.querySelectorAll('input')));
+                });
+
+                addSocialBtn?.addEventListener('click', () => {
+                    const newIndex = socialList.querySelectorAll('.list-group-item').length;
+                    socialList.appendChild(buildSocialItem(newIndex));
+                    updateSocialEmptyMessage();
+                });
+
+                socialList.addEventListener('click', (e) => {
+                    const rem = e.target.closest('.remove-social');
+                    if (!rem) return;
+                    const item = rem.closest('.list-group-item');
+                    if (item) {
+                        item.remove();
+                        reindexSocials();
+                        updateSocialEmptyMessage();
+                    }
+                });
+
+                updateSocialEmptyMessage();
+            }
+
+            /* --- Links (nuevo) --- */
+            const linksList = document.getElementById('linksList');
+            const addLinkBtn = document.getElementById('addLinkButton');
+            const noLinksMsgId = 'noLinksMessage';
+
+            function updateLinksEmptyMessage() {
+                if (!linksList) return;
+                const message = document.getElementById(noLinksMsgId);
+                const hasItems = linksList.querySelector('.list-group-item');
+                if (!hasItems && !message) {
+                    const p = document.createElement('p');
+                    p.id = noLinksMsgId;
+                    p.className = 'text-muted mb-0';
+                    p.textContent = 'No hay enlaces configurados.';
+                    linksList.appendChild(p);
+                } else if (hasItems && message) {
+                    message.remove();
+                }
+            }
+
+            function buildLinkItem(index, values = {}) {
+                const item = document.createElement('div');
+                item.className = 'list-group-item border rounded mb-2';
+                item.dataset.index = index;
+
+                const header = document.createElement('div');
+                header.className = 'd-flex justify-content-between align-items-center mb-2';
+
+                const title = document.createElement('strong');
+                title.textContent = `Enlace #${index + 1}`;
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'btn btn-sm btn-link text-danger remove-link';
+                removeBtn.textContent = 'Eliminar';
+
+                header.append(title, removeBtn);
+
+                const row = document.createElement('div');
+                row.className = 'row g-3';
+
+                const nameCol = document.createElement('div');
+                nameCol.className = 'col-md-6';
+                const nameLabel = document.createElement('label');
+                nameLabel.className = 'form-label';
+                nameLabel.textContent = 'Texto';
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.name = `footer_links[${index}][name]`;
+                nameInput.className = 'form-control';
+                nameInput.required = true;
+                nameInput.value = values.name ?? '';
+                nameCol.append(nameLabel, nameInput);
+
+                const urlCol = document.createElement('div');
+                urlCol.className = 'col-md-6';
+                const urlLabel = document.createElement('label');
+                urlLabel.className = 'form-label';
+                urlLabel.textContent = 'URL';
+                const urlInput = document.createElement('input');
+                urlInput.type = 'url';
+                urlInput.name = `footer_links[${index}][url]`;
+                urlInput.className = 'form-control';
+                urlInput.required = true;
+                urlInput.value = values.url ?? '';
+                urlCol.append(urlLabel, urlInput);
+
+                row.append(nameCol, urlCol);
+                item.append(header, row);
+
+                attachValidationHandlers([nameInput, urlInput]);
+
+                return item;
+            }
+
+            function reindexLinks() {
+                const items = linksList?.querySelectorAll('.list-group-item') ?? [];
+                items.forEach((item, idx) => {
+                    item.dataset.index = idx;
+                    const title = item.querySelector('strong');
+                    if (title) title.textContent = `Enlace #${idx + 1}`;
+                    item.querySelectorAll('[name]').forEach(field => {
+                        const name = field.getAttribute('name');
+                        if (!name) return;
+                        field.setAttribute('name', name.replace(/footer_links\[\d+\]/, `footer_links[${idx}]`));
+                    });
+                });
+            }
+
+            if (linksList) {
+                // Attach handlers to existing items
+                Array.from(linksList.querySelectorAll('.list-group-item')).forEach((item, idx) => {
+                    item.dataset.index = idx;
+                    attachValidationHandlers(Array.from(item.querySelectorAll('input')));
+                });
+
+                addLinkBtn?.addEventListener('click', () => {
+                    const newIndex = linksList.querySelectorAll('.list-group-item').length;
+                    // if "no links" message present, remove it
+                    const noMsg = document.getElementById(noLinksMsgId);
+                    if (noMsg) noMsg.remove();
+                    linksList.appendChild(buildLinkItem(newIndex));
+                    updateLinksEmptyMessage();
+                });
+
+                linksList.addEventListener('click', (e) => {
+                    const rem = e.target.closest('.remove-link');
+                    if (!rem) return;
+                    const item = rem.closest('.list-group-item');
+                    if (item) {
+                        item.remove();
+                        reindexLinks();
+                        updateLinksEmptyMessage();
+                    }
+                });
+
+                updateLinksEmptyMessage();
+            }
+        })();
+    </script>
+@endpush

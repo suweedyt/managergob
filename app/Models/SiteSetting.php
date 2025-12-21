@@ -15,9 +15,13 @@ class SiteSetting extends Model
         'footer_contact',
         'footer_socials',
         'footer_copy',
+        'footer_logo',
+        'footer_map_iframe',
+        'footer_links'
     ];
 
     protected $casts = [
         'footer_socials' => 'array',
+        'footer_links' => 'array',
     ];
 }

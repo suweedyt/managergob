@@ -91,9 +91,9 @@
 
                     if (!empty($latitude) && !empty($longitude)) {
                         if (!empty($googleKey)) {
-                            $mapUrl = 'https://maps.googleapis.com/maps/api/staticmap?center=' . $latitude . ',' . $longitude . '&zoom=15&size=640x360&scale=2&markers=color:red|' . $latitude . ',' . $longitude . '&key=' . $googleKey;
+                            $mapUrl = 'https://maps.googleapis.com/maps/api/staticmap?center=' . $latitude . ',' . $longitude . '&zoom=18&size=640x360&scale=2&markers=color:red|' . $latitude . ',' . $longitude . '&key=' . $googleKey;
                         } else {
-                            $mapUrl = 'https://staticmap.openstreetmap.de/staticmap.php?center=' . $latitude . ',' . $longitude . '&zoom=15&size=640x360&markers=' . $latitude . ',' . $longitude . ',red-pushpin';
+                            $mapUrl = 'https://staticmap.openstreetmap.de/staticmap.php?center=' . $latitude . ',' . $longitude . '&zoom=18&size=640x360&markers=' . $latitude . ',' . $longitude . ',red-pushpin';
                         }
                     }
                 @endphp

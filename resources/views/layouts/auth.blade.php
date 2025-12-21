@@ -14,16 +14,18 @@
         <!-- inject:css -->
         <!-- endinject -->
         <!-- Layout styles -->
-    <!-- Font Awesome (admin) -->
-    <link rel="stylesheet" href="{{ asset('assets/website/plugins/font-awesome/css/all.min.css') }}">
+        <!-- Font Awesome (admin) -->
+        <link rel="stylesheet" href="{{ asset('assets/website/plugins/font-awesome/css/all.min.css') }}">
         <link rel="stylesheet" href="{{asset('assets/auth/css/style.css')}}">
-         <link rel="stylesheet" href="{{asset('assets/auth/css/custom-style-morena.css')}}">
+        <link rel="stylesheet" href="{{asset('assets/auth/css/custom-style-morena.css')}}">
         <!-- End layout styles -->
         <link rel="shortcut icon" href="{{asset('assets/auth/images/favicon.png')}}" />
+        <!-- SweetAlert -->
+        <script src="{{ asset('assets/website/plugins/sweetalert/sweetalert.min.js') }}"></script>
 
         @yield('styles')
-
-        <script src="{{ asset('assets/website/plugins/sweetalert/sweetalert.min.js') }}"></script>
+        <!--styles componentes -->
+        @stack('styles')
     </head>
     <body>
         <div class="container-scroller">
@@ -274,6 +276,9 @@
         </script>
         <!-- Scripts by module -->
         @yield('scripts')
+
+        <!-- scripts componentes -->
+        @stack('scripts')
 
         <script>
             @if (Session::has('alert-success'))

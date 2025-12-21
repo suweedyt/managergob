@@ -39,7 +39,11 @@
             $footerBg = optional($siteSettings)->footer_background_color ?? '#101010';
             $footerContact = optional($siteSettings)->footer_contact;
             $footerSocials = optional($siteSettings)->footer_socials ?? [];
+            $footerLinks = optional($siteSettings)->footer_links ?? [];
+            $footerLogo = optional($siteSettings)->footer_logo;
+            $footerMap = optional($siteSettings)->footer_map_iframe;
         @endphp
+        
         <!-- Header Start -->
         <header class="navigation" style="background-color: {{ $headerBg }}; min-height: {{ $headerHeight }}px;">
             <div class="container" style="min-height: inherit;">
@@ -47,7 +51,7 @@
                     <div class="col-lg-12">
                         <nav class="navbar navbar-expand-lg p-0" style="min-height: inherit;">
                             <a class="navbar-brand" href="/" style="height: {{ $headerHeight }}px; display: flex; align-items: center;">
-                                <img src="{{ $headerLogo ? asset('images/settings/' . $headerLogo) : asset('assets/website/images/logo.svg') }}" alt="Logo" style="max-height: {{ $headerHeight - 16 }}px; width: auto;" loading="lazy">
+                                <img src="{{ $headerLogo ? asset('storage/images/settings/' . $headerLogo) : asset('assets/website/images/logo.svg') }}" alt="Logo" style="max-height: {{ $headerHeight - 16 }}px; width: auto;" loading="lazy">
                             </a>
 
                             <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarsExample09" aria-controls="navbarsExample09" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,29 +92,101 @@
         </main>
 
         <!-- footer Start -->
-        <footer class="footer" style="background-color: {{ $footerBg }};">
+        <footer class="footer" style="background-color: {{ $footerBg }}; color: {{ optional($siteSettings)->footer_text_color ?? '#ffffff' }};">
             <div class="container py-5">
                 <div class="row g-4 align-items-start">
-                    <div class="col-12 col-lg-6">
+                    <div class="col-12 col-md-4 col-lg-2 d-flex flex-column gap-3">
+                        @if(optional($siteSettings)->footer_logo)
+                            <img src="{{ asset('storage/images/settings/' . $siteSettings->footer_logo) }}" alt="Logo footer" class="img-fluid" style="max-height: 140px; object-fit: contain;">
+                        @else
+                            <img src="{{ asset('assets/website/images/logo.svg') }}" alt="Logo" class="img-fluid" style="max-height: 140px; object-fit: contain;">
+                        @endif
+                    </div>
+
+                    <div class="col-12 col-md-4 col-lg-3">
+                        <h6 class="text-uppercase text-white-50 mb-3">Dirección</h6>
                         @if ($footerContact)
-                            <div class="footer-contact text-white text-left">
+                            <div class="footer-contact text-white">
                                 {!! nl2br(e($footerContact)) !!}
                             </div>
                         @else
                             <p class="text-white-50 mb-0">Actualiza la información de contacto desde el panel de administración.</p>
                         @endif
                     </div>
-                    <div class="col-12 col-lg-6">
+
+                    <div class="col-12 col-md-4 col-lg-3">
+                        @php
+                            $mapSrc = optional($siteSettings)->footer_map_iframe;
+                            $mapHref = $mapSrc;
+                            if ($mapSrc) {
+                                try {
+                                    $u = parse_url($mapSrc);
+                                    parse_str($u['query'] ?? '', $qs);
+                                    $lat = $lng = null;
+                                    $zoom = $qs['zoom'] ?? null;
+
+                                    if (!empty($qs['center'])) {
+                                        [$lat, $lng] = explode(',', $qs['center']) + [null, null];
+                                    } elseif (!empty($qs['markers'])) {
+                                        if (preg_match('/(-?\d+\.\d+),\s*(-?\d+\.\d+)/', $qs['markers'], $m)) {
+                                            $lat = $m[1]; $lng = $m[2];
+                                        }
+                                    } else {
+                                        if (preg_match('/@(-?\d+\.\d+),(-?\d+\.\d+),(\d+)z/', $mapSrc, $m)) {
+                                            $lat = $m[1]; $lng = $m[2]; $zoom = $m[3];
+                                        }
+                                    }
+
+                                    if ($lat !== null && $lng !== null) {
+                                        $z = is_numeric($zoom) ? intval($zoom) : 15;
+                                        // formato requerido: https://www.google.com/maps?q=lat,lng&z=18
+                                        $mapHref = "https://www.google.com/maps?q={$lat},{$lng}&z={$z}";
+                                   }
+                                } catch (\Throwable $e) {
+                                    // keep fallback
+                                }
+                            }
+                        @endphp
+
+                        @if ($mapSrc)
+                            <div class="ratio ratio-4x3">
+                                <a href="{{ $mapHref }}" target="_blank" rel="noopener">
+                                    <img src="{!! $mapSrc !!}" alt="Mapa del sitio" class="img-fluid">
+                                </a>
+                            </div>
+                        @else
+                            <p class="text-white-50 mb-0">Agrega el iframe del mapa en la configuración.</p>
+                        @endif
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-2">
+                        <h6 class="text-uppercase text-white-50 mb-3">Enlaces de interés</h6>
+                        @php $footerLinks = optional($siteSettings)->footer_links ?? []; @endphp
+                        @if (!empty($footerLinks))
+                            <ul class="list-unstyled mb-0">
+                                @foreach ($footerLinks as $link)
+                                    <li class="mb-2">
+                                        <a href="{{ $link['url'] ?? '#' }}" class="text-white" target="_blank" rel="noopener">{{ $link['name'] ?? 'Enlace' }}</a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <p class="text-white-50 mb-0">Agrega enlaces desde el panel.</p>
+                        @endif
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-2">
+                        <h6 class="text-uppercase text-white-50 mb-3">Redes sociales</h6>
                         @if (!empty($footerSocials))
                             <div class="footer-socials">
-                                <ul class="list-unstyled d-flex flex-wrap flex-column align-items-end gap-y-3 m-0">
+                                <ul class="list-unstyled d-flex flex-column gap-2 m-0">
                                     @foreach ($footerSocials as $social)
                                         <li>
-                                            <a href="{{ $social['url'] ?? '#' }}" target="_blank" rel="noopener" class="d-flex align-items-center gap-2 text-white">
-                                                <span class="mr-2 mb-1">{{ $social['name'] ?? 'Red social' }}</span>
+                                            <a href="{{ $social['url'] ?? '#' }}" target="_blank" rel="noopener" class="d-flex align-items-center gap-2 text-white" style="flex-direction: row; flex-wrap: nowrap; justify-content: space-evenly;">
                                                 @if (!empty($social['icon_url']))
                                                     <img src="{{ $social['icon_url'] }}" alt="Icono {{ $social['name'] ?? 'Red social' }}" style="width: 24px; height: 24px; object-fit: contain;" loading="lazy">
                                                 @endif
+                                                <span>{{ $social['name'] ?? 'Red social' }}</span>
                                             </a>
                                         </li>
                                     @endforeach
