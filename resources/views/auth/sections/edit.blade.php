@@ -112,7 +112,7 @@
 
                                             <div class="form-group">
                                                 <label for="logo_image">Logo (imagen) — opcional</label>
-                                                <input type="file" name="logo_image" id="logo_image" class="form-control-file" accept="image/*">
+                                                <input type="file" name="logo_image" id="logo_image" class="form-control" accept="image/*">
                                                 @if($section->logo_image)
                                                     <div class="mt-2"><img src="{{ asset($section->logo_image) }}" alt="logo" style="max-width: 120px;"></div>
                                                 @endif

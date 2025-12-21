@@ -149,6 +149,21 @@
     background-color: #611232;
 }
 
+@media (min-width: 1200px) {
+    .footer .container {
+        max-width: 80%;
+    }
+}
+
+.footer .list-unstyled li a {
+    font-size: 12px;
+    color: #fff;
+}
+.footer .list-unstyled li a:hover{
+    font-size: 12px;
+    color: #595959;
+}
+
 /* Restore list styles inside editor-generated content */
 .rich-content ul,
 .rich-content ol {

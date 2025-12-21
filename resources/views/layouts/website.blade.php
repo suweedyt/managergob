@@ -94,6 +94,35 @@
         <!-- footer Start -->
         <footer class="footer" style="background-color: {{ $footerBg }}; color: {{ optional($siteSettings)->footer_text_color ?? '#ffffff' }};">
             <div class="container py-5">
+                <style>
+                    /* Footer local adjustments: center blocks; for social links place icon at the right and text at the left */
+                    .footer .footer-links-list,
+                    .footer .footer-socials-list {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: .5rem;
+                        margin: 0;
+                        padding: 0;
+                    }
+                    .footer .footer-social-link {
+                        display: flex;
+                        align-items: center;
+                        gap: .5rem;
+                        width: 220px; /* keep a consistent column width */
+                        justify-content: flex-end; /* align content to the right side of the block */
+                        color: inherit;
+                        text-decoration: none;
+                    }
+                    /* ensure text sits immediately to the left of the icon */
+                    .footer .footer-social-link span { order: 1; margin-right: .5rem; }
+                    .footer .footer-social-link img { order: 2; width: 24px; height: 24px; object-fit: contain; }
+                    .footer .footer-links-list a { display: block; width: 220px; text-align: left; color: inherit; text-decoration: none; }
+                    @media (max-width: 767px) {
+                        .footer .footer-social-link,
+                        .footer .footer-links-list a { width: 100%; text-align: left; }
+                    }
+                </style>
                 <div class="row g-4 align-items-start">
                     <div class="col-12 col-md-4 col-lg-2 d-flex flex-column gap-3">
                         @if(optional($siteSettings)->footer_logo)
@@ -159,14 +188,14 @@
                         @endif
                     </div>
 
-                    <div class="col-12 col-md-6 col-lg-2">
+                    <div class="col-12 col-md-6 col-lg-2 footer-links">
                         <h6 class="text-uppercase text-white-50 mb-3">Enlaces de interés</h6>
                         @php $footerLinks = optional($siteSettings)->footer_links ?? []; @endphp
                         @if (!empty($footerLinks))
-                            <ul class="list-unstyled mb-0">
+                            <ul class="list-unstyled mb-0 footer-links-list">
                                 @foreach ($footerLinks as $link)
                                     <li class="mb-2">
-                                        <a href="{{ $link['url'] ?? '#' }}" class="text-white" target="_blank" rel="noopener">{{ $link['name'] ?? 'Enlace' }}</a>
+                                        <a href="{{ $link['url'] ?? '#' }}" target="_blank" rel="noopener">{{ $link['name'] ?? 'Enlace' }}</a>
                                     </li>
                                 @endforeach
                             </ul>
@@ -179,14 +208,14 @@
                         <h6 class="text-uppercase text-white-50 mb-3">Redes sociales</h6>
                         @if (!empty($footerSocials))
                             <div class="footer-socials">
-                                <ul class="list-unstyled d-flex flex-column gap-2 m-0">
+                                <ul class="list-unstyled m-0 footer-socials-list">
                                     @foreach ($footerSocials as $social)
                                         <li>
-                                            <a href="{{ $social['url'] ?? '#' }}" target="_blank" rel="noopener" class="d-flex align-items-center gap-2 text-white" style="flex-direction: row; flex-wrap: nowrap; justify-content: space-evenly;">
-                                                @if (!empty($social['icon_url']))
-                                                    <img src="{{ $social['icon_url'] }}" alt="Icono {{ $social['name'] ?? 'Red social' }}" style="width: 24px; height: 24px; object-fit: contain;" loading="lazy">
-                                                @endif
+                                            <a href="{{ $social['url'] ?? '#' }}" target="_blank" rel="noopener" class="footer-social-link">
                                                 <span>{{ $social['name'] ?? 'Red social' }}</span>
+                                                @if (!empty($social['icon_url']))
+                                                    <img src="{{ $social['icon_url'] }}" alt="Icono {{ $social['name'] ?? 'Red social' }}" loading="lazy">
+                                                @endif
                                             </a>
                                         </li>
                                     @endforeach

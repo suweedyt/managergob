@@ -111,7 +111,7 @@
 
                                             <div class="form-group">
                                                 <label for="logo_image">Logo (imagen) — opcional</label>
-                                                <input type="file" name="logo_image" id="logo_image" class="form-control-file" accept="image/*">
+                                                <input type="file" name="logo_image" id="logo_image" class="form-control" accept="image/*">
                                             </div>
                                         </div>
                                     </div>
