@@ -169,6 +169,27 @@
                                                         <div class="slider-preview-overlay">Arrastra para ajustar la posición</div>
                                                     </div>
                                                 </div>
+                                                <div class="row mt-3">
+                                                    <div class="col-md-4">
+                                                        <div class="form-group form-check">
+                                                            <input type="hidden" name="banner_show_caption" value="0">
+                                                            <input type="checkbox" class="form-check-input" id="banner_show_caption" name="banner_show_caption" value="1" @checked(old('banner_show_caption', 1))>
+                                                            <label class="form-check-label" for="banner_show_caption">Mostrar título y descripción en el front</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label for="banner_button_text">Texto botón</label>
+                                                            <input type="text" name="banner_button_text" id="banner_button_text" class="form-control" value="{{ old('banner_button_text') }}" placeholder="Leer más">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label for="banner_button_bg_color">Color botón</label>
+                                                            <input type="color" name="banner_button_bg_color" id="banner_button_bg_color" class="form-control-color" value="{{ old('banner_button_bg_color', '#0d6efd') }}">
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

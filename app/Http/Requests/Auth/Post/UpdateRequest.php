@@ -35,6 +35,9 @@ class UpdateRequest extends FormRequest
             'slider_position_y' => ['nullable', 'integer', 'min:0', 'max:100'],
             'description' => ['required', 'min:10', 'max:5000000'],
             'banner_short_description' => ['nullable', 'string', 'max:180'],
+            'banner_show_caption' => ['nullable', 'boolean'],
+            'banner_button_text' => ['nullable', 'string', 'max:80'],
+            'banner_button_bg_color' => ['nullable', 'string', 'max:20'],
         ];
     }
 }

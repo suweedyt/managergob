@@ -25,6 +25,9 @@ class Post extends Model
         'slider_position_y',
         'description',
         'banner_short_description',
+        'banner_show_caption',
+        'banner_button_text',
+        'banner_button_bg_color',
     ];
 
     public function gallery() {

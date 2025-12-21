@@ -11,9 +11,10 @@
                     @php
                         $isPost = $item instanceof \App\Models\Post;
                         $title = $isPost ? $item->title : $item->title;
-                        $buttonText = $isPost ? 'Leer más' : ($item->button_text ?: 'Ver más');
+                        // for posts allow admin to override button text/color and control caption visibility
+                        $buttonText = $isPost ? ($item->banner_button_text ?: 'Leer más') : ($item->button_text ?: 'Ver más');
                         $buttonUrl = $isPost ? route('news.single', $item->id) : ($item->button_url ?: '#');
-                        $buttonBg = $isPost ? '#0d6efd' : ($item->button_bg_color ?: '#0d6efd');
+                        $buttonBg = $isPost ? ($item->banner_button_bg_color ?: '#0d6efd') : ($item->button_bg_color ?: '#0d6efd');
 
                         if ($isPost) {
                             if (optional($item->sliderGallery)->image) {
@@ -59,19 +60,29 @@
                             </div>
                         @endif
                         @php
-                            // Decide whether to show caption: always show for posts; for banners only when admin provided both text and url
-                            $showCaption = $isPost || (!empty($item->button_text) && !empty($item->button_url));
+                            // Decide whether to show caption:
+                            // - for posts: respect `banner_show_caption` (default true)
+                            // - for admin banners: show only when both button_text and button_url provided
+                            $showCaption = $isPost ? (($item->banner_show_caption ?? true) ? true : false) : (!empty($item->button_text) && !empty($item->button_url));
                         @endphp
 
-                        @if($showCaption)
-                            <div class="carousel-caption d-none d-md-block text-start" style="background: rgba(0,0,0,0.4); padding: 20px;">
-                                <h3>{{ $title }}</h3>
-                                <p class="shortDescription-banner">{!! $bannerDescription !!}</p>
-                                @if($isPost)
-                                    {{-- Posts: keep previous behaviour (has route and button) --}}
+                        @if($isPost)
+                            @if($item->banner_show_caption ?? true)
+                                <div class="carousel-caption d-none d-md-block text-start" style="background: rgba(0,0,0,0.4); padding: 20px;">
+                                    <h3>{{ $title }}</h3>
+                                    <p class="shortDescription-banner">{!! $bannerDescription !!}</p>
                                     <a href="{{ $buttonUrl }}" class="btn btn-primary" style="background-color: {{ $buttonBg }}; border-color: {{ $buttonBg }};" target="{{ $isPost ? '_self' : '_blank' }}">{{ $buttonText }}</a>
-                                @else
-                                    {{-- Admin-provided banners: button_text and button_url guaranteed present when $showCaption is true --}}
+                                </div>
+                            @else
+                                <div class="carousel-caption d-none d-md-block text-start" style="background: rgba(0,0,0,0.0); padding: 20px;">
+                                    <a href="{{ $buttonUrl }}" class="btn btn-primary" style="background-color: {{ $buttonBg }}; border-color: {{ $buttonBg }};" target="{{ $isPost ? '_self' : '_blank' }}">{{ $buttonText }}</a>
+                                </div>
+                            @endif
+                        @else
+                            @if(!empty($item->button_text) && !empty($item->button_url))
+                                <div class="carousel-caption d-none d-md-block text-start" style="background: rgba(0,0,0,0.4); padding: 20px;">
+                                    <h3>{{ $title }}</h3>
+                                    <p class="shortDescription-banner">{!! $bannerDescription !!}</p>
                                     @if($isVideo)
                                         @if(!$isExternal && !$isYouTube)
                                             <a href="{{ $buttonUrl }}" class="btn btn-primary btn-config" style="background-color: {{ $buttonBg }}; border-color: {{ $buttonBg }};" target="{{ $isPost ? '_self' : '_blank' }}">{{ $buttonText }}</a>
@@ -82,8 +93,8 @@
                                     @else
                                         <a href="{{ $buttonUrl }}" class="btn btn-primary" style="background-color: {{ $buttonBg }}; border-color: {{ $buttonBg }};" target="{{ $isPost ? '_self' : '_blank' }}">{{ $buttonText }}</a>
                                     @endif
-                                @endif
-                            </div>
+                                </div>
+                            @endif
                         @endif
                     </div>
                 @endforeach

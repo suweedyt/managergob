@@ -107,9 +107,13 @@ class PostController extends Controller
                 'is_news_slider' => $request->boolean('is_news_slider'),
                 'slider_gallery_id' => $sliderGalleryId,
                 // Asegurar posiciones si la noticia será usada en un slider (banner o news slider)
-                'slider_position_x' => ($request->boolean('is_slider') || $request->boolean('is_news_slider')) ? $sliderPositionX : null,
-                'slider_position_y' => ($request->boolean('is_slider') || $request->boolean('is_news_slider')) ? $sliderPositionY : null,
+                // Evitar escribir NULL en columnas no nulas: usar 50 como valor por defecto
+                'slider_position_x' => ($request->boolean('is_slider') || $request->boolean('is_news_slider')) ? $sliderPositionX : 50,
+                'slider_position_y' => ($request->boolean('is_slider') || $request->boolean('is_news_slider')) ? $sliderPositionY : 50,
                 'banner_short_description' => $bannerShortDescription,
+                'banner_show_caption' => $request->boolean('banner_show_caption'),
+                'banner_button_text' => $request->input('banner_button_text'),
+                'banner_button_bg_color' => $request->input('banner_button_bg_color'),
             ]);
 
             DB::commit();
@@ -215,19 +219,20 @@ class PostController extends Controller
 
                 $post->slider_position_x = $request->input('slider_position_x', $post->slider_position_x ?? 50);
                 $post->slider_position_y = $request->input('slider_position_y', $post->slider_position_y ?? 50);
-            } else {
-                $post->is_slider = false;
-
-                if ($request->boolean('is_news_slider')) {
-                    // No es banner pero sí aparece en el slider de noticias: mantener o establecer posiciones
-                    $post->slider_position_x = $request->input('slider_position_x', $post->slider_position_x ?? 50);
-                    $post->slider_position_y = $request->input('slider_position_y', $post->slider_position_y ?? 50);
-                    $post->slider_gallery_id = $post->gallery_id ?? null;
                 } else {
-                    $post->slider_position_x = null;
-                    $post->slider_position_y = null;
-                    $post->slider_gallery_id = null;
-                }
+                    $post->is_slider = false;
+
+                    if ($request->boolean('is_news_slider')) {
+                        // No es banner pero sí aparece en el slider de noticias: mantener o establecer posiciones
+                        $post->slider_position_x = $request->input('slider_position_x', $post->slider_position_x ?? 50);
+                        $post->slider_position_y = $request->input('slider_position_y', $post->slider_position_y ?? 50);
+                        $post->slider_gallery_id = $post->gallery_id ?? null;
+                    } else {
+                        // Evitar valores NULL para columnas no nulas: dejar posiciones por defecto (50)
+                        $post->slider_position_x = 50;
+                        $post->slider_position_y = 50;
+                        $post->slider_gallery_id = null;
+                    }
 
                 if ($post->sliderGallery && ($post->sliderGallery->id !== ($post->gallery_id ?? null))) {
                     $oldImage = $post->sliderGallery->image;
@@ -246,6 +251,10 @@ class PostController extends Controller
             $post->is_published = $request->is_published;
             $post->description = $request->description;
             $post->banner_short_description = $bannerShortDescription;
+            // new banner options
+            $post->banner_show_caption = $request->boolean('banner_show_caption');
+            $post->banner_button_text = $request->input('banner_button_text');
+            $post->banner_button_bg_color = $request->input('banner_button_bg_color');
 
             $post->save();
 
