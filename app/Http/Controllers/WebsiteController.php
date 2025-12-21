@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Banner;
 use App\Models\FeatureSetting;
 use App\Models\Post;
+use App\Models\Category;
+use Illuminate\Support\Facades\DB as FacadeDB;
+use Carbon\Carbon;
 use App\Models\Section;
 use App\Models\SectionSetting;
 use App\Models\Tramite;
@@ -85,8 +88,55 @@ class WebsiteController extends Controller
             ->orderBy('id', 'desc')
             ->take(5)
             ->get();
-        $posts = Post::where('is_published', Post::Published)->paginate(2);
-        return view('website.news.index', ['posts' => $posts, 'latestsPosts' => $latestsPosts]);
+
+        // Build base query for listing with optional filters
+        $query = Post::where('is_published', Post::Published)->orderByDesc('id');
+
+        $filterYear = request()->query('year');
+        $filterMonth = request()->query('month');
+        $filterCategory = request()->query('category');
+
+        if ($filterYear && $filterMonth) {
+            $query->whereYear('created_at', (int) $filterYear)
+                  ->whereMonth('created_at', (int) $filterMonth);
+        }
+
+        if ($filterCategory) {
+            $query->where('category_id', (int) $filterCategory);
+        }
+
+        // Paginar 2 noticias por página como se desea
+        $posts = $query->paginate(2)->withQueryString();
+
+        // Archive months: get distinct year-month combinations from published posts
+        $months = Post::where('is_published', Post::Published)
+            ->select(FacadeDB::raw("YEAR(created_at) as year"), FacadeDB::raw("MONTH(created_at) as month"))
+            ->orderByDesc('year')
+            ->orderByDesc('month')
+            ->distinct()
+            ->get();
+
+        // Map months into a simple array with labels
+        $archiveMonths = $months->map(function ($row) {
+            $year = $row->year;
+            $month = $row->month;
+            $monthName = Carbon::createFromDate($year, $month, 1)->locale('es')->isoFormat('MMMM');
+            $label = ucfirst($monthName) . ' ' . $year;
+            return [
+                'year' => $year,
+                'month' => $month,
+                'label' => $label,
+            ];
+        })->unique();
+
+        $categories = Category::orderBy('name')->get();
+
+        return view('website.news.index', [
+            'posts' => $posts,
+            'latestsPosts' => $latestsPosts,
+            'archiveMonths' => $archiveMonths,
+            'categories' => $categories,
+        ]);
     }
 
     public function show(Post $new)

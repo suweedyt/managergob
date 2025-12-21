@@ -2183,9 +2183,11 @@ ul.dropdown-menu li {
   text-transform: capitalize;
   font-size: 26px;
   margin-bottom: 20px;
+  color: #611232;
+  font-weight: bold;
 }
 .post .post-title a {
-  color: #655E7A;
+  color: #611232;
 }
 .post .post-title a:hover {
   color: #655E7A;
@@ -2206,7 +2208,7 @@ ul.dropdown-menu li {
   color: #909090;
 }
 .post .post-meta ul li a:hover {
-  color: #655E7A;
+  color: #611232;
 }
 .post .post-meta .post-author {
   color: #000;
@@ -2216,6 +2218,10 @@ ul.dropdown-menu li {
 }
 .post .post-content p {
   line-height: 26px;
+}
+.post .post-content a:hover,
+.post .post-content a:focus {
+  color: #fff;
 }
 .post .post-content .btn-main, .post .post-content .btn-transparent, .post .post-content .btn-small {
   padding: 10px 20px;

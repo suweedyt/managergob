@@ -126,6 +126,24 @@
     color: #611232;
 }
 
+/** FILTROS NEW **/
+.list-unstyled li a.btn-outline-secondary {
+    color: #5e4625;
+    border-color: #8f7046;
+}
+
+.list-unstyled li a.btn-outline-secondary:hover {
+    color: #8f7046;
+    background-color: #d2b987;
+    border-color: #5e4625;
+}
+
+.list-unstyled li a.btn-outline-secondary:not(:disabled):not(.disabled).active {
+    color: #8f7046;
+    background-color: #d2b987;
+    border-color: #5e4625;
+}
+
 /* Footer */
 .footer {
     background-color: #611232;
