@@ -72,7 +72,7 @@
                                                 <td class="text-capitalize">{{ $banner->media_type }}</td>
                                                 <td>
                                                     <a href="{{ route('banners.edit', $banner) }}" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a>
-                                                    <a href="{{ url('auth/banners/preview') . '?media_type=' . $banner->media_type . '&media_path=' . urlencode($banner->media_path) . '&position_x=' . ($banner->position_x ?? 50) . '&position_y=' . ($banner->position_y ?? 50) . '&title=' . urlencode($banner->title) }}" target="_blank" class="btn btn-sm btn-secondary" style="margin-left:6px;"><i class="fas fa-eye"></i></a>
+                                                    <a href="{{ url('auth/banners/preview') . '?media_type=' . $banner->media_type . '&media_path=' . urlencode($banner->media_path) . '&position_x=' . ($banner->position_x ?? 50) . '&position_y=' . ($banner->position_y ?? 50) . '&title=' . urlencode($banner->title) }}" class="btn btn-sm btn-secondary" style="margin-left:6px;"><i class="fas fa-eye"></i></a>
                                                     <button type="button" class="btn btn-sm btn-danger btn-delete" data-url="{{ route('banners.destroy', $banner) }}"><i class="fas fa-trash"></i></button>
                                                 </td>
                                             </tr>

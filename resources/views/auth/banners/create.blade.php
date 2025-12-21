@@ -72,7 +72,7 @@
                                                 <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label for="button_bg_color">Color del botón</label>
-                                                        <input type="color" name="button_bg_color" id="button_bg_color" class="form-control form-control-color" value="{{ old('button_bg_color', '#0069d9') }}">
+                                                        <input type="color" name="button_bg_color" id="button_bg_color" class="form-control-color" value="{{ old('button_bg_color', '#0069d9') }}">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
@@ -231,7 +231,22 @@
                 if($vid.length){ $vid.css('object-position', Math.round(xPercent)+'% '+Math.round(yPercent)+'%'); }
             }
 
-            function setSourceMode(mode){ if(mode==='upload'){ $uploadWrapper.show(); $urlWrapper.hide(); } else { $uploadWrapper.hide(); $urlWrapper.show(); } }
+            function setSourceMode(mode){
+                if(mode==='upload'){
+                    $uploadWrapper.show();
+                    $urlWrapper.hide();
+                    // disable media_url so browser won't try to validate hidden invalid url
+                    $mediaUrl.prop('disabled', true);
+                    // enable file input
+                    $mediaInput.prop('disabled', false);
+                } else {
+                    $uploadWrapper.hide();
+                    $urlWrapper.show();
+                    $mediaUrl.prop('disabled', false);
+                    // when using URL source, disable file input to avoid validating it
+                    $mediaInput.prop('disabled', true);
+                }
+            }
 
             // initial source mode
             setSourceMode($('input[name="media_source"]:checked').val());
@@ -271,3 +286,17 @@
         });
     </script>
 @endsection
+<script>
+    // make button_url required when button_text has content (client-side UX)
+    document.addEventListener('DOMContentLoaded', function(){
+        function toggleButtonUrl(){
+            var txt = document.getElementById('button_text');
+            var url = document.getElementById('button_url');
+            if(!txt || !url) return;
+            if(txt.value.trim() !== '') url.setAttribute('required','required');
+            else url.removeAttribute('required');
+        }
+        var bt = document.getElementById('button_text');
+        if(bt){ bt.addEventListener('input', toggleButtonUrl); toggleButtonUrl(); }
+    });
+</script>

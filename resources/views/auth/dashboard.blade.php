@@ -41,6 +41,15 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-3 stretch-card grid-margin">
+                <div class="card bg-gradient-primary card-img-holder text-white">
+                    <div class="card-body">
+                        <h4 class="font-weight-normal mb-3">Secciones <i class="mdi mdi-view-sequential-outline mdi-24px float-right"></i>
+                        </h4>
+                        <h2 class="mb-5">{{ $sectionsCount }}</h2>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection

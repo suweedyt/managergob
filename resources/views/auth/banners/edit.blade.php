@@ -73,7 +73,7 @@
                                                 <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label for="button_bg_color">Color del botón</label>
-                                                        <input type="color" name="button_bg_color" id="button_bg_color" class="form-control form-control-color" value="{{ old('button_bg_color', $banner->button_bg_color ?? '#0069d9') }}">
+                                                        <input type="color" name="button_bg_color" id="button_bg_color" class="form-control-color" value="{{ old('button_bg_color', $banner->button_bg_color ?? '#0069d9') }}">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
@@ -123,6 +123,10 @@
                                     <div id="bannerMedia" class="accordion-collapse collapse" aria-labelledby="bannerMediaHeading" data-bs-parent="#bannerAccordion">
                                         <div class="accordion-body">
                                             <div class="row g-3">
+                                                @php
+                                                    $rawPathTop = $banner->media_path ?? '';
+                                                    $isExternalTop = \Illuminate\Support\Str::startsWith($rawPathTop, ['http://','https://']);
+                                                @endphp
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="media_type">Tipo de media</label>
@@ -137,11 +141,11 @@
                                                         <label>Fuente de media</label>
                                                         <div>
                                                             <div class="form-check form-check-inline">
-                                                                <input class="form-check-input" type="radio" name="media_source" id="source_upload" value="upload" checked>
+                                                                <input class="form-check-input" type="radio" name="media_source" id="source_upload" value="upload" @checked(!($isExternalTop ?? false))>
                                                                 <label class="form-check-label" for="source_upload">Subir archivo</label>
                                                             </div>
                                                             <div class="form-check form-check-inline">
-                                                                <input class="form-check-input" type="radio" name="media_source" id="source_url" value="url">
+                                                                <input class="form-check-input" type="radio" name="media_source" id="source_url" value="url" @checked($isExternalTop ?? false)>
                                                                 <label class="form-check-label" for="source_url">URL externa</label>
                                                             </div>
                                                         </div>
@@ -159,7 +163,7 @@
                                                 <div class="col-12" id="url_wrapper" style="display:none;">
                                                     <div class="form-group">
                                                         <label for="media_url">URL externa (imagen o video)</label>
-                                                        <input type="url" name="media_url" id="media_url" class="form-control" placeholder="https://ejemplo.com/archivo.jpg" value="{{ old('media_url', $banner->media_path ?? '') }}">
+                                                        <input type="url" name="media_url" id="media_url" class="form-control" placeholder="https://ejemplo.com/archivo.jpg" value="{{ old('media_url', (\Illuminate\Support\Str::startsWith($banner->media_path ?? '', ['http://','https://']) ? $banner->media_path : '')) }}">
                                                     </div>
                                                 </div>
 
@@ -254,7 +258,22 @@
                 if($vid.length){ $vid.css('object-position', Math.round(xPercent)+'% '+Math.round(yPercent)+'%'); }
             }
 
-            function setSourceMode(mode){ if(mode==='upload'){ $uploadWrapper.show(); $urlWrapper.hide(); } else { $uploadWrapper.hide(); $urlWrapper.show(); } }
+            function setSourceMode(mode){
+                if(mode==='upload'){
+                    $uploadWrapper.show();
+                    $urlWrapper.hide();
+                    // disable media_url so browser won't try to validate hidden invalid url
+                    $mediaUrl.prop('disabled', true);
+                    // enable file input
+                    $mediaInput.prop('disabled', false);
+                } else {
+                    $uploadWrapper.hide();
+                    $urlWrapper.show();
+                    $mediaUrl.prop('disabled', false);
+                    // when using URL source, disable file input to avoid validating it
+                    $mediaInput.prop('disabled', true);
+                }
+            }
 
             // initial source mode
             setSourceMode($('input[name="media_source"]:checked').val());
@@ -307,3 +326,17 @@
         });
     </script>
 @endsection
+<script>
+    // make button_url required when button_text has content (client-side UX)
+    document.addEventListener('DOMContentLoaded', function(){
+        function toggleButtonUrl(){
+            var txt = document.getElementById('button_text');
+            var url = document.getElementById('button_url');
+            if(!txt || !url) return;
+            if(txt.value.trim() !== '') url.setAttribute('required','required');
+            else url.removeAttribute('required');
+        }
+        var bt = document.getElementById('button_text');
+        if(bt){ bt.addEventListener('input', toggleButtonUrl); toggleButtonUrl(); }
+    });
+</script>

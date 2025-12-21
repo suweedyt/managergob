@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tramite;
 use App\Models\User;
+use App\Models\Section;
 
 class DashboardController extends Controller
 {
@@ -16,7 +17,8 @@ class DashboardController extends Controller
         $categoryCount = Category::count();
         $usersCount = User::count();
         $tramiteCount = Tramite::count();
+        $sectionsCount = Section::count();
 
-        return view('auth.dashboard', compact('usersCount', 'postCount', 'categoryCount', 'tramiteCount'));
+        return view('auth.dashboard', compact('usersCount', 'postCount', 'categoryCount', 'tramiteCount', 'sectionsCount'));
     }
 }

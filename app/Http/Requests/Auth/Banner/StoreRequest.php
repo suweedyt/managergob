@@ -19,7 +19,8 @@ class StoreRequest extends FormRequest
             'long_description' => ['nullable', 'string'],
             'button_text' => ['nullable', 'string', 'max:80'],
             'button_bg_color' => ['nullable', 'string', 'max:20'],
-            'button_url' => ['nullable', 'url'],
+            // if admin provides a button text, button_url must be present and a valid URL
+            'button_url' => ['nullable', 'required_with:button_text', 'url'],
             // max: 102400 = 100MB (value in kilobytes)
             'media' => ['required_without:media_url', 'file', 'mimes:jpg,jpeg,png,webp,mp4', 'max:102400'],
             'media_url' => ['nullable', 'url'],
