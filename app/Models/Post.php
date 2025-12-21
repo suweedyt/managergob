@@ -38,4 +38,9 @@ class Post extends Model
     public function sliderGallery() {
         return $this->belongsTo(Gallery::class, 'slider_gallery_id');
     }
+
+    public function newsShowcaseItem()
+    {
+        return $this->hasOne(NewsShowcaseItem::class, 'post_id');
+    }
 }

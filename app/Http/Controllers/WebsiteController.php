@@ -11,22 +11,26 @@ use App\Models\Tramite;
 use App\Models\TramiteSetting;
 use App\Models\Location;
 use App\Models\ContactSetting;
+use App\Models\NewsShowcaseItem;
+use App\Models\NewsShowcaseSetting;
 
 class WebsiteController extends Controller
 {
     public function home()
     {
         $sectionsSettings = SectionSetting::first();
-
         $sections = $this->generateSections();
-
         $tramites = Tramite::where('is_published', true)
             ->orderBy('id', 'asc')
             ->take(8)
             ->get();
-
         $tramiteSettings = TramiteSetting::first();
         $featureSetting = FeatureSetting::first();
+        $showcasePosts = NewsShowcaseItem::with('post.gallery')
+            ->latest()
+            ->take(8)
+            ->get();
+        $showcaseSettings = NewsShowcaseSetting::first();
 
         return view('website.index', [
             'sectionsHome' => $sections,
@@ -35,6 +39,8 @@ class WebsiteController extends Controller
             'tramiteSettings' => $tramiteSettings,
             'featureSetting' => $featureSetting,
             'bannerSliders' => $this->getBannerSliders(),
+            'showcaseItems' => $showcasePosts,
+            'showcaseSettings' => $showcaseSettings,
         ]);
     }
 
@@ -96,9 +102,6 @@ class WebsiteController extends Controller
         return view('website.tramites.index', ['tramites' => $tramites, 'tramiteSettings' => $tramiteSettings, 'featureSetting' => $featureSetting]);
     }
 
-    /**
-     * Display an external link or pdf for a tramite configured as link.
-     */
     public function tramiteLink(Tramite $tramite)
     {
         if ($tramite->mode !== 'link' || empty($tramite->redirect_url)) {

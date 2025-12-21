@@ -101,7 +101,12 @@
                         </li>
 
                         @php
-                            $isNoticias = request()->is('auth/posts*') || request()->is('auth/categories*') || request()->routeIs('posts.*') || request()->routeIs('categories.*') || request()->routeIs('newsslider.*');
+                            $isNoticias = request()->is('auth/posts*')
+                                || request()->is('auth/categories*')
+                                || request()->routeIs('posts.*')
+                                || request()->routeIs('categories.*')
+                                || request()->routeIs('newsslider.*')
+                                || request()->routeIs('newsshowcase.*');
                         @endphp
                         <li class="nav-item">
                             <a class="nav-link {{ $isNoticias ? '' : 'collapsed' }}" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="{{ $isNoticias ? 'true' : 'false' }}" aria-controls="ui-basic">
@@ -119,6 +124,9 @@
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link {{ request()->routeIs('newsslider.*') ? 'active' : '' }}" href="{{ route('newsslider.index') }}">Slider Home</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('newsshowcase.*') ? 'active' : '' }}" href="{{ route('newsshowcase.index') }}">Aparador de noticias</a>
                                     </li>
                                 </ul>
                             </div>

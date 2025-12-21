@@ -14,6 +14,7 @@ use App\Http\Controllers\Auth\ContactSettingController;
 use App\Http\Controllers\Auth\SectionController;
 use App\Http\Controllers\Auth\SectionSettingController;
 use App\Http\Controllers\Auth\NewsSliderSettingController;
+use App\Http\Controllers\Auth\NewsShowcaseController;
 use App\Http\Controllers\WebsiteController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -51,7 +52,11 @@ Route::prefix('auth')->middleware(['auth'])->group(function () {
     Route::resource('featuresettings', FeatureSettingController::class)->only(['index', 'store']);
     Route::resource('admin-settings', AdminSettingController::class)->only(['index', 'store']);
     Route::resource('newsslider', NewsSliderSettingController::class)->only(['index', 'store']);
+    Route::resource('newsshowcase', NewsShowcaseController::class)->only(['index', 'store']);
 
     Route::get('posts/{post}/preview', [PostController::class, 'preview'])->name('posts.preview');
     Route::resource('site-settings', SiteSettingController::class)->only(['index', 'store']);
+
+    Route::post('newsshowcase/{id}/toggle-size', [NewsShowcaseController::class, 'toggleSize'])
+        ->name('newsshowcase.toggleSize');
 });

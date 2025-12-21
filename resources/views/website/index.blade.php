@@ -14,6 +14,10 @@
         'sectionsSettings' => $sectionsSettings ?? null,
     ])
 
+    @if(isset($showcaseItems) && $showcaseItems->count())
+        <x-news-showcase :items="$showcaseItems" :settings="$showcaseSettings" />
+    @endif
+
     <x-feature-section :featureSetting="$featureSetting ?? null" />
 
     <x-slider />
