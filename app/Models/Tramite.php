@@ -16,9 +16,15 @@ class Tramite extends Model
         'mode',
         'redirect_url',
         'is_published',
+        'category_id',
     ];
 
     protected $casts = [
         'is_published' => 'boolean',
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

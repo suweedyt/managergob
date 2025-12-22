@@ -11,7 +11,12 @@ class Category extends Model
 
     protected $fillable = [
         'name',
+        'type',
+        'position',
     ];
 
-    
+    public function tramites()
+    {
+        return $this->hasMany(Tramite::class, 'category_id');
+    }
 }

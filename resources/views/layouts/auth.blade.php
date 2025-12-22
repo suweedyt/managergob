@@ -104,9 +104,7 @@
 
                         @php
                             $isNoticias = request()->is('auth/posts*')
-                                || request()->is('auth/categories*')
                                 || request()->routeIs('posts.*')
-                                || request()->routeIs('categories.*')
                                 || request()->routeIs('newsslider.*')
                                 || request()->routeIs('newsshowcase.*');
                         @endphp
@@ -122,13 +120,31 @@
                                         <a class="nav-link {{ request()->routeIs('posts.*') ? 'active' : '' }}" href="{{ route('posts.index') }}">Noticias</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link {{ request()->routeIs('categories.*') ? 'active' : '' }}" href="{{ route('categories.index') }}">Categorías</a>
-                                    </li>
-                                    <li class="nav-item">
                                         <a class="nav-link {{ request()->routeIs('newsslider.*') ? 'active' : '' }}" href="{{ route('newsslider.index') }}">Slider Home</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link {{ request()->routeIs('newsshowcase.*') ? 'active' : '' }}" href="{{ route('newsshowcase.index') }}">Aparador de noticias</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        @php
+                            $isCategories = request()->routeIs('categories.*');
+                        @endphp
+                        <li class="nav-item">
+                            <a class="nav-link {{ $isCategories ? '' : 'collapsed' }}" data-bs-toggle="collapse" href="#categories-config" aria-expanded="{{ $isCategories ? 'true' : 'false' }}" aria-controls="categories-config">
+                                <span class="menu-title">Categorías</span>
+                                <i class="menu-arrow"></i>
+                                <i class="mdi mdi-folder-multiple menu-icon"></i>
+                            </a>
+                            <div class="collapse {{ $isCategories ? 'show' : '' }}" id="categories-config">
+                                <ul class="nav flex-column sub-menu">
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('categories.*') && request()->get('type', 'news') === 'news' ? 'active' : '' }}" href="{{ route('categories.index', ['type' => 'news']) }}">Categorías Noticias</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('categories.*') && request()->get('type') === 'tramite' ? 'active' : '' }}" href="{{ route('categories.index', ['type' => 'tramite']) }}">Categorías Trámites</a>
                                     </li>
                                 </ul>
                             </div>

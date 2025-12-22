@@ -61,6 +61,16 @@
                                             </div>
 
                                             <div class="form-group">
+                                                <label for="category_id">Categoría</label>
+                                                <select name="category_id" id="category_id" class="form-control">
+                                                    <option value="">Sin categoría</option>
+                                                    @foreach($categories as $cat)
+                                                        <option value="{{ $cat->id }}" @selected(old('category_id', $tramite->category_id) == $cat->id)>{{ $cat->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group">
                                                 <label for="description">Descripción</label>
                                                 <textarea name="description" id="description" class="form-control" rows="3">{{ old('description', $tramite->description) }}</textarea>
                                             </div>
@@ -108,7 +118,7 @@
 
                                             <div class="form-group">
                                                 <label for="logo_image">Logo (imagen) — opcional</label>
-                                                <input type="file" name="logo_image" id="logo_image" class="form-control-file" accept="image/*">
+                                                <input type="file" name="logo_image" id="logo_image" class="form-control" accept="image/*">
                                                 @if($tramite->logo_image)
                                                     <div class="mt-2"><img src="{{ asset($tramite->logo_image) }}" alt="logo" style="max-width:120px;"></div>
                                                 @endif

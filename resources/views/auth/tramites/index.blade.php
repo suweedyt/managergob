@@ -15,6 +15,7 @@
         <div class="row mb-3">
             <div class="col container btn-addnew">
                 <a href="{{ route('tramites.create') }}" class="btn btn-gradient-primary me-2">Nuevo Trámite</a>
+                <a href="{{ route('categories.index') }}?type=tramite" class="btn btn-outline-secondary">Administrar Categorías</a>
             </div>
         </div>
 

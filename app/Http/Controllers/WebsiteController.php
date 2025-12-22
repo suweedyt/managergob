@@ -90,7 +90,7 @@ class WebsiteController extends Controller
             ->get();
 
         // Build base query for listing with optional filters
-        $query = Post::where('is_published', Post::Published)->orderByDesc('id');
+        $query = Post::where('is_published', Post::Published)->orderByDesc('created_at');
 
         $filterYear = request()->query('year');
         $filterMonth = request()->query('month');
@@ -129,7 +129,7 @@ class WebsiteController extends Controller
             ];
         })->unique();
 
-        $categories = Category::orderBy('name')->get();
+        $categories = Category::where('type', 'news')->orderBy('name')->get();
 
         return view('website.news.index', [
             'posts' => $posts,
@@ -146,10 +146,16 @@ class WebsiteController extends Controller
 
     public function tramites()
     {
+        $categories = Category::where('type', 'tramite')->orderBy('position')->orderBy('name')->get();
         $tramites = Tramite::where('is_published', true)->orderBy('id', 'asc')->get();
         $tramiteSettings = TramiteSetting::first();
         $featureSetting = FeatureSetting::first();
-        return view('website.tramites.index', ['tramites' => $tramites, 'tramiteSettings' => $tramiteSettings, 'featureSetting' => $featureSetting]);
+        return view('website.tramites.index', [
+            'tramites' => $tramites,
+            'tramiteSettings' => $tramiteSettings,
+            'featureSetting' => $featureSetting,
+            'categories' => $categories,
+        ]);
     }
 
     public function tramiteLink(Tramite $tramite)
@@ -165,11 +171,15 @@ class WebsiteController extends Controller
 
     public function tramiteShow(Tramite $tramite)
     {
-        // Show the tramites index but ask it to open the selected item
+        $categories = Category::where('type', 'tramite')->orderBy('position')->orderBy('name')->get();
         $tramites = Tramite::where('is_published', true)->orderBy('id', 'asc')->get();
         $tramiteSettings = TramiteSetting::first();
-        $featureSetting = FeatureSetting::first();
-        return view('website.tramites.index', ['tramites' => $tramites, 'openId' => $tramite->id, 'tramiteSettings' => $tramiteSettings]);
+        return view('website.tramites.index', [
+            'tramites' => $tramites,
+            'openId' => $tramite->id,
+            'tramiteSettings' => $tramiteSettings,
+            'categories' => $categories,
+        ]);
     }
 
     public function contact()

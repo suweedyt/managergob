@@ -22,7 +22,7 @@
         <div class="row">
             <div class="container btn-addnew">
                 <a href="{{ route('posts.create') }}" type="submit" class="btn btn-gradient-primary me-2">Nueva Noticia</a>
-                <a href="{{ route('categories.index') }}" class="btn btn-outline-secondary">Administrar Categorías</a>
+                <a href="{{ route('categories.index') }}?type=noticia" class="btn btn-outline-secondary">Administrar Categorías</a>
             </div>
         </div>
         <div class="row">

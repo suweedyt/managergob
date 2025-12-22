@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Auth\Tramite;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateRequest extends FormRequest
 {
@@ -23,6 +24,7 @@ class UpdateRequest extends FormRequest
             'mode' => ['required', 'string', 'in:content,link'],
             'redirect_url' => ['nullable','string','max:2048','required_if:mode,link','url'],
             'is_published' => ['nullable', 'boolean'],
+            'category_id' => ['nullable', Rule::exists('categories', 'id')->where('type', 'tramite')],
         ];
     }
 }

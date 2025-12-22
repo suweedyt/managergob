@@ -7,19 +7,22 @@ use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run()
     {
         Category::create([
             'name' => 'Noticias',
+            'type' => 'news',
+            'position' => 0,
         ]);
         Category::create([
             'name' => 'Alertas',
+            'type' => 'news',
+            'position' => 1,
         ]);
         Category::create([
             'name' => 'Información',
+            'type' => 'news',
+            'position' => 2,
         ]);
     }
 }

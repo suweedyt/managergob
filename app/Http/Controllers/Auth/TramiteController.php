@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\Tramite\StoreRequest;
 use App\Http\Requests\Auth\Tramite\UpdateRequest;
+use App\Models\Category;
 use App\Models\Tramite;
 use Exception;
 use Illuminate\Http\Request;
@@ -20,7 +21,8 @@ class TramiteController extends Controller
 
     public function create()
     {
-        return view('auth.tramites.create');
+        $categories = Category::where('type', 'tramite')->orderBy('position')->orderBy('name')->get();
+        return view('auth.tramites.create', ['categories' => $categories]);
     }
 
     public function store(StoreRequest $request)
@@ -56,7 +58,8 @@ class TramiteController extends Controller
     public function edit(string $id)
     {
         $tramite = Tramite::findOrFail($id);
-        return view('auth.tramites.edit', ['tramite' => $tramite]);
+        $categories = Category::where('type', 'tramite')->orderBy('position')->orderBy('name')->get();
+        return view('auth.tramites.edit', ['tramite' => $tramite, 'categories' => $categories]);
     }
 
     public function update(UpdateRequest $request, string $id)

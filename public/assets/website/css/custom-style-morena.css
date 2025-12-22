@@ -144,6 +144,23 @@
     border-color: #5e4625;
 }
 
+/* Tramites */
+
+@media (min-width: 1200px) {
+    .container {
+        max-width: 85%;
+    }
+}
+
+#tramitesAccordion .card-header {
+    border: 0px;
+    background: transparent;
+}
+
+#tramitesAccordion.accordion > .card {
+    border: 0px;
+}
+
 /* Footer */
 .footer {
     background-color: #611232;
