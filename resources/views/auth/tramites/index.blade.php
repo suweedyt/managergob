@@ -28,8 +28,8 @@
                                     <thead>
                                         <tr>
                                             <th>Logo</th>
-                                            <th>Título corto</th>
-                                            <th>Título completo</th>
+                                            <th>Título</th>
+                                            <th>Subtitulo</th>
                                             <th>Publicado</th>
                                             <th>Acciones</th>
                                         </tr>
@@ -44,8 +44,8 @@
                                                         <i class="{{ $tramite->logo_class }}" style="font-size:24px"></i>
                                                     @endif
                                                 </td>
-                                                <td>{{ $tramite->title_short }}</td>
                                                 <td>{{ $tramite->title_full }}</td>
+                                                <td>{{ $tramite->title_short }}</td>
                                                 <td>
                                                     @if ($tramite->is_published)
                                                         <span class="mdi mdi-check"></span>

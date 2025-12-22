@@ -57,7 +57,7 @@
 
                                             <div class="form-group">
                                                 <label for="title_short">Subtítulo</label>
-                                                <input type="text" name="title_short" id="title_short" class="form-control" value="{{ old('title_short', $tramite->title_short) }}" required>
+                                                <input type="text" name="title_short" id="title_short" class="form-control" value="{{ old('title_short', $tramite->title_short) }}">
                                             </div>
 
                                             <div class="form-group">

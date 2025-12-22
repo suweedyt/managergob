@@ -15,7 +15,7 @@ class UpdateRequest extends FormRequest
     {
         return [
             'title_full' => ['required', 'string', 'max:255'],
-            'title_short' => ['required', 'string', 'max:100'],
+            'title_short' => ['nullable', 'string', 'max:100'],
             'logo_class' => ['nullable', 'string', 'max:255'],
             'logo_image' => ['sometimes', 'nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:4096'],
             'description' => ['nullable', 'string'],
