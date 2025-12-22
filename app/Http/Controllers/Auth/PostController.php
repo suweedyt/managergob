@@ -28,7 +28,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
+        $categories = Category::where('type', 'news')->orderBy('position')->orderBy('name')->get();
         return view('auth.posts.create', ['categories' => $categories]);
     }
 
@@ -38,7 +38,7 @@ class PostController extends Controller
     public function edit(string $id)
     {
         $post = Post::with('gallery', 'sliderGallery')->findOrFail($id);
-        $categories = Category::all();
+        $categories = Category::where('type', 'news')->orderBy('position')->orderBy('name')->get();
 
         return view('auth.posts.edit', [
             'post' => $post,

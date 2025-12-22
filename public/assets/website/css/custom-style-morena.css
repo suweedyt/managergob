@@ -161,6 +161,11 @@
     border: 0px;
 }
 
+#categoryFilter .list-group-item.active {
+    background-color: #611232;
+    border-color: #611232;
+}
+
 /* Footer */
 .footer {
     background-color: #611232;
