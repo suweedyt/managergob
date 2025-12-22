@@ -22,12 +22,7 @@ yarn-error.log
 /.vscode
 /.zed
 /public/images/settings/*
-!/public/images/settings/.gitkeep
 /public/images/posts/*
-!/public/images/posts/.gitkeep
 /public/images/tramites/*
-!/public/images/tramites/.gitkeep
 /public/images/banners/*
-!/public/images/banners/.gitkeep
 /public/images/sections/*
-!/public/images/sections/.gitkeep
