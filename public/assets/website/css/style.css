@@ -1,9 +1,20 @@
 @charset "UTF-8";
 /*=== MEDIA QUERY ===*/
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Volkhov:ital@1&display=swap");
+@font-face {
+  font-family: "Trebuchet MS";
+  src: url("../fonts/Trebuchet/trebuc.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Trebuchet MS";
+  src: url("../fonts/Trebuchet/Trebuchet-MS-Italic.ttf") format("truetype");
+  font-style: italic;
+  font-weight: 400;
+}
 body {
   line-height: 1.65;
-  font-family: "Roboto", sans-serif;
+  font-family: "Trebuchet MS", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -13,16 +24,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Roboto", sans-serif;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-weight: 400;
+  font-family: "Trebuchet MS", sans-serif;
 }
 
 h1 {
@@ -44,7 +46,7 @@ h4 {
 p {
   color: #7B7B7B;
   font-size: 15px;
-  font-family: "Roboto", sans-serif;
+  font-family: "Trebuchet MS", sans-serif;
   line-height: 1.7;
 }
 
@@ -200,7 +202,7 @@ input[type=tel]:focus {
 }
 
 .btn:focus {
-  color: #ddd;
+  color: #55102c;
 }
 
 .w-100 {
@@ -630,7 +632,6 @@ input[type=tel]:focus {
 --*/
 header {
   background: #fff;
-  padding: 20px 0;
 }
 header .navbar {
   margin-bottom: 0px;
@@ -657,7 +658,6 @@ header .navbar-default .navbar-nav li a:hover {
 
 .navigation {
   background: #fff;
-  padding: 20px 0;
 }
 .navigation .navbar {
   margin-bottom: 0px;
@@ -821,7 +821,6 @@ ul.dropdown-menu li {
   background-size: cover;
   background-attachment: fixed;
   background-position: 10% 0%;
-  padding: 200px 0;
   position: relative;
 }
 @media (max-width: 992px) {
@@ -1152,7 +1151,7 @@ ul.dropdown-menu li {
   display: inline-block;
 }
 .testimonial .testimonial-carousel .user p {
-  font-family: "Roboto", sans-serif;
+  font-family: "Trebuchet MS", sans-serif;
   padding-bottom: 0;
   margin-top: 6px;
   font-size: 12px;
@@ -2184,9 +2183,11 @@ ul.dropdown-menu li {
   text-transform: capitalize;
   font-size: 26px;
   margin-bottom: 20px;
+  color: #611232;
+  font-weight: bold;
 }
 .post .post-title a {
-  color: #655E7A;
+  color: #611232;
 }
 .post .post-title a:hover {
   color: #655E7A;
@@ -2207,7 +2208,7 @@ ul.dropdown-menu li {
   color: #909090;
 }
 .post .post-meta ul li a:hover {
-  color: #655E7A;
+  color: #611232;
 }
 .post .post-meta .post-author {
   color: #000;
@@ -2217,6 +2218,10 @@ ul.dropdown-menu li {
 }
 .post .post-content p {
   line-height: 26px;
+}
+.post .post-content a:hover,
+.post .post-content a:focus {
+  color: #fff;
 }
 .post .post-content .btn-main, .post .post-content .btn-transparent, .post .post-content .btn-small {
   padding: 10px 20px;
@@ -2600,7 +2605,6 @@ ul.dropdown-menu li {
 .footer {
   background: #F5F5F5;
   text-align: center;
-  padding: 80px 0;
 }
 .footer p {
   font-size: 13px;

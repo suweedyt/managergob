@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Http\Requests\Auth\Tramite;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class UpdateRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'title_full' => ['required', 'string', 'max:255'],
+            'title_short' => ['nullable', 'string', 'max:100'],
+            'logo_class' => ['nullable', 'string', 'max:255'],
+            'logo_image' => ['sometimes', 'nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:4096'],
+            'description' => ['nullable', 'string'],
+            'content' => ['nullable', 'string'],
+            'mode' => ['required', 'string', 'in:content,link'],
+            'redirect_url' => ['nullable','string','max:2048','required_if:mode,link','url'],
+            'is_published' => ['nullable', 'boolean'],
+            'category_id' => ['nullable', Rule::exists('categories', 'id')->where('type', 'tramite')],
+        ];
+    }
+}

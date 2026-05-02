@@ -26,7 +26,7 @@
                             <img class="img-fluid" src="{{ $new ? $new->gallery->image : '' }}" alt="">
                         </div>
                         <div class="post-content post-excerpt">
-                            <p> {!! $new ? $new->description : '' !!} </p>
+                            <div class="rich-content"> {!! $new ? $new->description : '' !!} </div>
                         </div>
                     </div>
                 </div>

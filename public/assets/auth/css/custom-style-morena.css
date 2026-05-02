@@ -1,12 +1,88 @@
-.btn-gradient-primary {
-    background: -webkit-gradient(linear, left top, right top, from(#611232), to(#310919));
-    background: linear-gradient(to right, #611232, #310919);
+:root{
+    /* Colores del tema Morena */
+    --morena-primary-start: #611232;
+    --morena-primary-end:   #310919;
+    /* ligeros ajustes para hover/active */
+    --morena-primary-hover-start: #7a173b;
+    --morena-primary-hover-end:   #2b0711;
+
+    /* Secundario (base pedido por el cliente) */
+    --morena-secondary-base: #BC955C; /* color base solicitado */
+    /* derivadas para crear el gradiente y estados */
+    --morena-secondary-start: #d2b987; /* tono más claro */
+    --morena-secondary-end:   #8f7046; /* tono más oscuro */
+    --morena-secondary-hover-start: #e3c99f;
+    --morena-secondary-hover-end:   #a07e4f;
 }
+
+/* Botón principal (gradient) */
+.btn-gradient-primary {
+    background: linear-gradient(to right, var(--morena-primary-start), var(--morena-primary-end));
+    color: #fff;
+    border: none;
+}
+
+.btn-gradient-primary:hover,
+.btn-gradient-primary:focus {
+    background: linear-gradient(to right, var(--morena-primary-hover-start), var(--morena-primary-hover-end));
+    box-shadow: 0 6px 18px rgba(97,18,50,0.25);
+}
+
+.btn-gradient-primary:active,
+.btn-gradient-primary.active,
+.show > .btn-gradient-primary.dropdown-toggle {
+    background: linear-gradient(to right, var(--morena-primary-start), var(--morena-primary-end));
+}
+
+.btn-gradient-primary:disabled,
+.btn-gradient-primary[disabled] {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* Botón secundario (nuevo) basado en #BC955C */
+.btn-secondary {
+    background: linear-gradient(to right, var(--morena-secondary-start), var(--morena-secondary-end));
+    color: #fff;
+    border: none;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+    background: linear-gradient(to right, var(--morena-secondary-hover-start), var(--morena-secondary-hover-end));
+    box-shadow: 0 6px 18px rgba(188,149,92,0.18);
+}
+
+.btn-secondary:active,
+.btn-secondary.active {
+    background: linear-gradient(to right, var(--morena-secondary-start), var(--morena-secondary-end));
+}
+
+.btn-secondary:disabled,
+.btn-secondary[disabled] {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* Variante outline para secundario */
+.btn-outline-secondary {
+    background: transparent;
+    color: var(--morena-secondary-end);
+    border: 1px solid var(--morena-secondary-end);
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+    background: linear-gradient(to right, var(--morena-secondary-start), var(--morena-secondary-end));
+    color: #fff;
+}
+
+/* Pequeñas utilidades para compatibilidad con clases usadas en proyecto */
 .btn-gradient-primary:not([disabled]):not(.disabled):active,
 .btn-gradient-primary:not([disabled]):not(.disabled).active,
 .show > .btn-gradient-primary.dropdown-toggle {
-      background: -webkit-gradient(linear, left top, right top, from(#611232), to(#310919));
-      background: linear-gradient(to right, #611232, #310919);
+      /* aseguramos comportamiento idéntico al original */
+      background: linear-gradient(to right, var(--morena-primary-start), var(--morena-primary-end));
 }
 
 .breadcrumb .breadcrumb-item a {

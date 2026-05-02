@@ -22,7 +22,11 @@ class Slider extends Component
      */
     public function render(): View|Closure|string
     {
-        $latestsPosts = Post::where('is_published', Post::Published)->orderBy('id', 'desc')->take(5)->get();
+        $latestsPosts = Post::where('is_published', Post::Published)
+            ->where('is_news_slider', true)
+            ->orderBy('id', 'desc')
+            ->take(5)
+            ->get();
         return view('components.slider', ['latestsPosts' => $latestsPosts]);
     }
 }

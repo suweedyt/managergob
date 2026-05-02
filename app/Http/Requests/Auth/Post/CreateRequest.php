@@ -26,7 +26,17 @@ class CreateRequest extends FormRequest
             'category' => ['required'],
             'is_published' => ['required'],
             'file' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'dimensions:min_width=500, min_height=500'],
-            'description' => ['required', 'min:10', 'max:5000000']
+            'is_slider' => ['nullable', 'boolean'],
+            'banner_use_different' => ['nullable', 'boolean'],
+            'is_news_slider' => ['nullable', 'boolean'],
+            'slider_file' => ['sometimes', 'required_if:banner_use_different,1', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'dimensions:min_width=500, min_height=500'],
+            'slider_position_x' => ['nullable', 'integer', 'min:0', 'max:100'],
+            'slider_position_y' => ['nullable', 'integer', 'min:0', 'max:100'],
+            'description' => ['required', 'min:10', 'max:5000000'],
+            'banner_short_description' => ['nullable', 'string', 'max:180'],
+            'banner_show_caption' => ['nullable', 'boolean'],
+            'banner_button_text' => ['nullable', 'string', 'max:80'],
+            'banner_button_bg_color' => ['nullable', 'string', 'max:20'],
         ];
     }
 }
