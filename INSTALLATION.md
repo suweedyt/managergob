@@ -212,3 +212,64 @@ sudo systemctl restart apache2
 ## Notas finales
 - En producción se ejecuta `npm run build` para compilar los assets a `public/build`. **No se ejecuta `npm run dev`** (eso es solo para desarrollo local). Una vez compilados, Node ya no es necesario en runtime.
 - Laravel se sirve íntegramente a través de Apache/PHP. Node/npm solo se necesita durante el despliegue para compilar assets.
+- No se incluyen en este documento pasos relacionados con colas, cron o SSL: solo lo mínimo necesario para que la aplicación funcione.
+
+## Despliegue sin Git
+
+Si el servidor de producción no tiene Git, compila en tu máquina y transfiere los archivos manualmente (FTP, SCP, rsync, ZIP, etc.).
+
+### Archivos a transferir
+
+```
+app/
+bootstrap/
+config/
+database/
+lang/
+public/          ← incluye public/build/ ya compilado
+resources/
+routes/
+storage/         ← solo la estructura, sin logs ni cache
+artisan
+composer.json
+composer.lock
+.env.example
+```
+
+### No transferir
+
+| Carpeta/archivo | Motivo |
+|---|---|
+| `vendor/` | Se regenera con `composer install` en el servidor |
+| `node_modules/` | No necesario si `public/build/` ya va compilado |
+| `.git/` | No aplica |
+| `.env` | Se crea nuevo en el servidor |
+| `bootstrap/cache/*` | Se genera con `php artisan config:cache` |
+| `storage/logs/*` | Deben quedar vacíos |
+
+> Si transfieres `public/build/` ya compilado **no necesitas instalar Node en el servidor**. Solo PHP, Composer y Apache.
+
+### Pasos en el servidor tras transferir
+
+```bash
+# 1. Instalar dependencias PHP
+composer install --optimize-autoloader --no-dev
+
+# 2. Configurar entorno
+cp .env.example .env
+# editar .env con datos reales (APP_URL, DB_*, etc.)
+php artisan key:generate
+
+# 3. Base de datos
+php artisan migrate --force
+
+# 4. Permisos
+sudo chown -R www-data:www-data storage bootstrap/cache
+sudo chmod -R 775 storage bootstrap/cache
+php artisan storage:link
+
+# 5. Optimización
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
