@@ -4,14 +4,15 @@ Este documento describe cómo instalar y poner en marcha el proyecto `managergob
 
 **Resumen**
 - Requisitos: PHP, extensiones, Composer, Node.js, npm, MySQL/MariaDB, Git.
-- Pasos: clonar repo → instalar dependencias PHP y Node → crear `.env` → generar `APP_KEY` → crear base de datos → ejecutar migraciones/seeders → build de assets → permisos → ejecutar la app.
+- Pasos: clonar repo → instalar dependencias PHP y Node → crear `.env` → generar `APP_KEY` → crear base de datos → ejecutar migraciones → build de assets → permisos → ejecutar la app.
 
 **Requisitos mínimos**
-- **PHP**: 8.2 o superior (el build registra `8.2.29`).
+- **Laravel**: 12.x (`v12.58.0` en el build actual).
+- **PHP**: 8.2 o superior (el build registra `8.5.5`).
 - **Extensiones PHP necesarias**: `bcmath`, `ctype`, `curl`, `dom`, `fileinfo`, `filter`, `hash`, `mbstring`, `openssl`, `pcre`, `pdo`, `session`, `tokenizer`, `xml`, `pdo_mysql`.
-- **Composer**: para instalar dependencias PHP.
-- **Node.js**: se usó `22.x` en el build (por ejemplo `22.21.1`).
-- **npm**: compatible con Node 22.
+- **Composer**: 2.x (el build registra `2.9.7`).
+- **Node.js**: se usó `22.x` en el build (por ejemplo `22.22.2`).
+- **npm**: `10.x` compatible con Node 22 (el build registra `10.9.7`).
 - **Base de datos**: MySQL o MariaDB (ejemplo con MySQL).
 - **Git**: para clonar el repositorio.
 
@@ -39,20 +40,22 @@ Este documento describe los pasos mínimos para desplegar `managergob` en un ser
 
 ## Requisitos mínimos del servidor
 - Sistema operativo: Debian/Ubuntu (ejemplos con apt). Adapta para otras distros.
-- PHP 8.2+ con PHP-FPM.
+- PHP 8.2+ con PHP-FPM (se recomienda 8.5).
 - Extensiones PHP: `bcmath`, `ctype`, `curl`, `dom`, `fileinfo`, `filter`, `hash`, `mbstring`, `openssl`, `pcre`, `pdo`, `session`, `tokenizer`, `xml`, `pdo_mysql`.
-- Composer disponible en `PATH`.
-- Node.js 22.x y `npm` (sólo para compilar assets, no para ejecutar Laravel).
+- Composer 2.x disponible en `PATH`.
+- Node.js 22.x y npm 10.x (sólo para compilar assets, no para ejecutar Laravel).
 - Servidor de base de datos MySQL/MariaDB accesible desde la máquina.
 - Git para clonar el repositorio.
 
 ## Preparar paquetes del sistema (ejemplo minimal)
 
-```fish
+```bash
 sudo apt update && sudo apt upgrade -y
-sudo apt install -y git curl unzip zip nginx mysql-client
-sudo apt install -y php8.2-fpm php8.2-cli php8.2-mbstring php8.2-xml php8.2-mysql php8.2-curl php8.2-zip php8.2-bcmath
+sudo apt install -y git curl unzip zip mysql-client
+sudo apt install -y apache2 libapache2-mod-php8.5
+sudo apt install -y php8.5-cli php8.5-mbstring php8.5-xml php8.5-mysql php8.5-curl php8.5-zip php8.5-bcmath
 sudo apt install -y build-essential
+sudo a2enmod rewrite
 ```
 
 Instalar Composer (si no existe):
@@ -133,7 +136,6 @@ Actualiza `.env` con esos valores.
 
 ```fish
 php artisan migrate --force
-php artisan db:seed --class=DatabaseSeeder --force
 ```
 
 Si el proyecto usa `SESSION_DRIVER=database`, crea la tabla de sesiones antes de migrar:
@@ -163,46 +165,50 @@ php artisan view:cache
 php artisan event:cache
 ```
 
-## Configuración mínima de Nginx (referencia)
+## Configurar VirtualHost en Apache
 
-Coloca un bloque de servidor que apunte a `public/` como `root` y pase PHP a PHP-FPM. Ejemplo de referencia (ajusta `server_name` y rutas):
+Instala Apache y el módulo PHP si aún no los tienes:
 
-```
-server {
-  listen 80;
-  server_name ejemplo.com;
-  root /var/www/html/managergob/public;
-
-  index index.php index.html;
-
-  location / {
-    try_files $uri $uri/ /index.php?$query_string;
-  }
-
-  location ~ \.php$ {
-    include snippets/fastcgi-php.conf;
-    fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
-    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-    include fastcgi_params;
-  }
-
-  location ~ /\.ht {
-    deny all;
-  }
-}
+```bash
+sudo apt install -y apache2 libapache2-mod-php8.2
+sudo a2enmod rewrite
 ```
 
-Después de configurar, reinicia PHP-FPM y recarga Nginx:
+Crea el archivo VirtualHost (ajusta `ServerName` y la ruta al proyecto):
 
-```fish
-sudo systemctl restart php8.2-fpm
-sudo systemctl reload nginx
+```bash
+sudo nano /etc/apache2/sites-available/managergob.conf
 ```
+
+Contenido del archivo:
+
+```apache
+<VirtualHost *:80>
+    ServerName ejemplo.com
+
+    DocumentRoot /var/www/html/managergob/public
+
+    <Directory /var/www/html/managergob/public>
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    DirectoryIndex index.php index.html
+
+    ErrorLog /var/log/apache2/managergob_error.log
+    CustomLog /var/log/apache2/managergob_access.log combined
+</VirtualHost>
+```
+
+Activa el sitio y reinicia Apache:
+
+```bash
+sudo a2ensite managergob.conf
+sudo systemctl restart apache2
+```
+
+> **Nota:** `AllowOverride All` es necesario para que el `.htaccess` de Laravel funcione correctamente.
 
 ## Notas finales
-- Laravel se instala y prepara principalmente con `composer` y los comandos `artisan` (migraciones, `key:generate`, `storage:link`, caches). Node/`npm` sólo es necesario si el proyecto incluye assets a compilar (Vite).
-- No se incluyen en este documento pasos relacionados con colas, cron o SSL: sólo lo mínimo necesario para que la aplicación funcione en un servidor de producción nuevo.
-
----
-
-Si quieres que haga el commit de esta versión final de `INSTALLATION.md` al branch `create-editors`, lo hago ahora.
+- En producción se ejecuta `npm run build` para compilar los assets a `public/build`. **No se ejecuta `npm run dev`** (eso es solo para desarrollo local). Una vez compilados, Node ya no es necesario en runtime.
+- Laravel se sirve íntegramente a través de Apache/PHP. Node/npm solo se necesita durante el despliegue para compilar assets.

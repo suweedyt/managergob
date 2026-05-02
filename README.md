@@ -78,17 +78,18 @@ Proyecto en Laravel para crear contenido dinamico en una pagina principal
 
 ### Prerequisites
 
-* laravel
-    - https://laravel.com/
-* node
-  - https://nodejs.org/es
-* npm
-  - https://www.npmjs.com/
+* **Laravel 12** — https://laravel.com/
+* **PHP 8.5** — https://www.php.net/
+* **Composer 2.9** — https://getcomposer.org/
+* **Node.js 22.x** — https://nodejs.org/es
+* **npm 10.x** — https://www.npmjs.com/
+* **MySQL / MariaDB**
 
   ```
-  laravel new gobierno
+  composer install
   npm install
   npm run build
+  php artisan migrate
   ```
 
 ### Installation

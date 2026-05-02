@@ -2,8 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use Fideloper\Proxy\TrustProxies as Middleware;
-use Illuminate\Http\Request;
+use Illuminate\Http\Middleware\TrustProxies as Middleware;
 
 class TrustProxies extends Middleware
 {
@@ -20,5 +19,9 @@ class TrustProxies extends Middleware
 	 *
 	 * @var int
 	 */
-	protected $headers = Request::HEADER_X_FORWARDED_ALL;
+	protected $headers =
+		\Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_FOR |
+		\Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_HOST |
+		\Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PORT |
+		\Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PROTO;
 }

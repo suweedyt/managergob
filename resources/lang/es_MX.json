@@ -1,0 +1,15 @@
+{
+    "Login": "Iniciar sesión",
+    "Logout": "Cerrar sesión",
+    "Register": "Registrarse",
+    "Remember Me": "Recuérdame",
+    "Forgot Your Password?": "¿Olvidaste tu contraseña?",
+    "Email Address": "Dirección de correo electrónico",
+    "Password": "Contraseña",
+    "Name": "Nombre",
+    "Confirm Password": "Confirmar contraseña",
+    "Reset Password": "Restablecer contraseña",
+    "Send Password Reset Link": "Enviar enlace de restablecimiento de contraseña",
+    "pagination.previous": "&laquo; Anterior",
+    "pagination.next": "Siguiente &raquo"
+}
